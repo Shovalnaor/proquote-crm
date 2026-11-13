@@ -1,0 +1,2986 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+<meta name="description" content="ProQuote CRM — מחשבון הצעות מחיר, בקרת רווחיות וניהול לקוחות לבעלי מקצוע" />
+<title>ProQuote CRM v3 — הצעות מחיר, רווחיות וניהול לקוחות</title>
+<style>
+/* ===================================================================
+   ProQuote CRM v3 — עיצוב עצמאי לחלוטין (אין תלות ב-CDN, עובד אופליין)
+   =================================================================== */
+:root{
+  color-scheme: light;
+  --bg:#f4f6f8; --surface:#ffffff; --surface-2:#f8fafc; --surface-3:#eef2f7;
+  --line:#e2e8f0; --line-2:#cbd5e1;
+  --ink:#0b1220; --ink-2:#475569; --muted:#7c8694;
+  --brand:#2a78d6; --brand-2:#1c5cab; --brand-soft:#eaf2fd;
+  --good:#0ca30c; --good-ink:#076b07; --good-soft:#e8f7e8;
+  --warn:#fab219; --warn-ink:#8a5d00; --warn-soft:#fff6e0;
+  --serious:#ec835a; --crit:#d03b3b; --crit-ink:#9b1f1f; --crit-soft:#fdecec;
+  --grid:#e8ecf2; --axis:#c3cbd6;
+  --ring:0 0 0 3px rgba(42,120,214,.25);
+  --sh-1:0 1px 2px rgba(11,18,32,.06), 0 1px 1px rgba(11,18,32,.04);
+  --sh-2:0 4px 14px rgba(11,18,32,.08);
+  --r:12px; --r-lg:16px; --r-sm:8px;
+  --seq-1:#86b6ef; --seq-2:#5598e7; --seq-3:#2a78d6; --seq-4:#1c5cab; --seq-5:#104281;
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0f1216; --surface:#161a20; --surface-2:#1c2127; --surface-3:#222933;
+  --line:#2a313a; --line-2:#3a434f;
+  --ink:#eef2f6; --ink-2:#b6c0cb; --muted:#8a949f;
+  --brand:#3987e5; --brand-2:#6da7ec; --brand-soft:#17273a;
+  --good:#0ca30c; --good-ink:#5fd25f; --good-soft:#122412;
+  --warn:#fab219; --warn-ink:#f0c25a; --warn-soft:#2a2210;
+  --serious:#ec835a; --crit:#d03b3b; --crit-ink:#f08585; --crit-soft:#2a1414;
+  --grid:#242b34; --axis:#3a434f;
+  --sh-1:0 1px 2px rgba(0,0,0,.5); --sh-2:0 6px 18px rgba(0,0,0,.45);
+  --seq-1:#104281; --seq-2:#1c5cab; --seq-3:#2a78d6; --seq-4:#5598e7; --seq-5:#86b6ef;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Heebo','Rubik','Assistant',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  background:var(--bg); color:var(--ink); font-size:14px; line-height:1.45;
+  -webkit-text-size-adjust:100%; padding-bottom:64px;
+}
+h1,h2,h3,h4{margin:0; line-height:1.25}
+button,input,select,textarea{font:inherit; color:inherit}
+button{cursor:pointer; background:none; border:none; padding:0}
+a{color:var(--brand); text-decoration:none}
+:focus-visible{outline:none; box-shadow:var(--ring); border-radius:6px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- בקרות ---------- */
+.inp,.sel,.ta{
+  width:100%; background:var(--surface); border:1px solid var(--line-2);
+  border-radius:var(--r-sm); padding:8px 10px; transition:border-color .15s, box-shadow .15s;
+  min-height:38px;
+}
+.ta{min-height:76px; resize:vertical; line-height:1.6}
+.inp:hover,.sel:hover,.ta:hover{border-color:var(--brand)}
+.inp:focus,.sel:focus,.ta:focus{outline:none; border-color:var(--brand); box-shadow:var(--ring)}
+.inp.err,.sel.err{border-color:var(--crit); box-shadow:0 0 0 3px rgba(208,59,59,.18)}
+.inp-sm{min-height:32px; padding:4px 8px; font-size:13px}
+.lbl{display:block; font-size:12px; font-weight:700; color:var(--ink-2); margin-bottom:4px}
+.hint{font-size:11.5px; color:var(--muted)}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  border:1px solid transparent; border-radius:10px; padding:9px 14px;
+  font-weight:700; font-size:13.5px; transition:background .15s,border-color .15s,transform .05s;
+  min-height:40px; white-space:nowrap;
+}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--brand); color:#fff}
+.btn-primary:hover{background:var(--brand-2)}
+.btn-dark{background:var(--ink); color:var(--surface)}
+.btn-dark:hover{opacity:.88}
+.btn-ghost{background:var(--surface-2); color:var(--ink); border-color:var(--line-2)}
+.btn-ghost:hover{background:var(--surface-3)}
+.btn-good{background:var(--good); color:#fff}
+.btn-good:hover{filter:brightness(.92)}
+.btn-danger{background:var(--crit-soft); color:var(--crit-ink); border-color:var(--crit)}
+.btn-danger:hover{background:var(--crit); color:#fff}
+.btn-sm{padding:5px 10px; font-size:12.5px; min-height:32px; border-radius:8px}
+.btn-icon{padding:6px; min-height:30px; width:30px; border-radius:8px; color:var(--muted)}
+.btn-icon:hover{background:var(--surface-3); color:var(--ink)}
+.btn-icon.danger:hover{background:var(--crit); color:#fff}
+.btn[disabled]{opacity:.45; cursor:not-allowed}
+.switch{display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:12.5px; font-weight:600}
+.switch input{width:16px;height:16px;accent-color:var(--brand);cursor:pointer}
+
+/* ---------- שלד ---------- */
+.wrap{max-width:1180px; margin:0 auto; padding:0 14px}
+header.app{position:sticky; top:0; z-index:40; background:var(--ink); color:#fff; box-shadow:var(--sh-2)}
+:root[data-theme="dark"] header.app{background:#0a0d11; border-bottom:1px solid var(--line)}
+.hdr-top{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:10px 0}
+.brand{display:flex; align-items:center; gap:10px}
+.brand .mark{
+  width:40px;height:40px;border-radius:11px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#2a78d6,#6250d6); font-weight:900; font-size:15px; letter-spacing:-.5px;
+}
+.brand h1{font-size:16px; font-weight:800; letter-spacing:-.2px; display:flex; align-items:center; gap:7px}
+.brand p{margin:2px 0 0; font-size:11.5px; color:#9fb0c4}
+.pill{font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:999px; background:rgba(57,135,229,.22); color:#8fc0ff}
+.hdr-actions{display:flex; flex-wrap:wrap; align-items:center; gap:7px}
+.hdr-actions .btn-ghost{background:rgba(255,255,255,.08); color:#e8eef5; border-color:rgba(255,255,255,.16)}
+.hdr-actions .btn-ghost:hover{background:rgba(255,255,255,.16)}
+nav.tabs{display:flex; gap:3px; overflow-x:auto; scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:10px 16px; border-radius:11px 11px 0 0; font-weight:700; font-size:13.5px;
+  color:#a9b8c9; display:flex; align-items:center; gap:7px; white-space:nowrap;
+}
+.tab:hover{background:rgba(255,255,255,.08); color:#fff}
+.tab[aria-selected="true"]{background:var(--bg); color:var(--ink)}
+.tab .count{font-size:11px; font-weight:800; background:var(--brand); color:#fff; border-radius:999px; padding:1px 7px}
+.tab[aria-selected="true"] .count{background:var(--brand); color:#fff}
+main{padding-top:18px}
+.panel{display:none}
+.panel.on{display:block}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--sh-1)}
+.card-pad{padding:18px}
+.stack>*+*{margin-top:16px}
+.grid{display:grid; gap:14px}
+.sec-title{font-size:15px; font-weight:800; letter-spacing:-.2px}
+.sec-sub{font-size:12px; color:var(--muted); margin-top:3px}
+.row-between{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px}
+.divide{border-top:1px solid var(--line)}
+
+/* ---------- תגיות סטטוס (צבע + אייקון + טקסט) ---------- */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:999px;border:1px solid}
+.badge svg{width:12px;height:12px;flex:0 0 auto}
+.b-good{background:var(--good-soft); color:var(--good-ink); border-color:var(--good)}
+.b-warn{background:var(--warn-soft); color:var(--warn-ink); border-color:var(--warn)}
+.b-crit{background:var(--crit-soft); color:var(--crit-ink); border-color:var(--crit)}
+.b-mut{background:var(--surface-3); color:var(--ink-2); border-color:var(--line-2)}
+.b-brand{background:var(--brand-soft); color:var(--brand-2); border-color:var(--brand)}
+
+/* ---------- אריחי KPI ---------- */
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(165px,1fr)); gap:12px}
+.kpi{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:14px 16px; box-shadow:var(--sh-1)}
+.kpi .k-lbl{font-size:11.5px; font-weight:700; color:var(--muted); display:flex; align-items:center; gap:6px}
+.kpi .k-val{font-size:24px; font-weight:900; letter-spacing:-.6px; margin-top:5px}
+.kpi .k-sub{font-size:11.5px; color:var(--muted); margin-top:2px}
+
+/* ---------- טבלאות ---------- */
+.tbl-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+table.t{width:100%; border-collapse:collapse; text-align:right}
+table.t th{
+  background:var(--surface-2); font-size:11.5px; font-weight:800; color:var(--ink-2);
+  padding:10px 8px; border-bottom:1px solid var(--line); white-space:nowrap; position:relative;
+}
+table.t td{padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:middle}
+table.t tbody tr:hover{background:var(--surface-2)}
+.col-cost{background:var(--crit-soft)}
+:root[data-theme="dark"] .col-cost{background:rgba(208,59,59,.1)}
+th.col-cost{color:var(--crit-ink)}
+.cell-total{font-weight:800; text-align:left; white-space:nowrap}
+.mini{font-size:11px; color:var(--muted)}
+.empty{text-align:center; padding:46px 20px; color:var(--muted)}
+.empty .big{font-size:32px}
+.empty h3{font-size:14.5px; color:var(--ink-2); margin:8px 0 4px}
+
+/* ---------- לוח רווחיות ---------- */
+.profit{background:var(--ink); color:#fff; border-radius:var(--r-lg); padding:16px; border-inline-end:7px solid var(--good)}
+:root[data-theme="dark"] .profit{background:#0a0d11; border:1px solid var(--line); border-inline-end:7px solid var(--good)}
+.profit.m-warn{border-inline-end-color:var(--warn)}
+.profit.m-crit{border-inline-end-color:var(--crit)}
+.profit .tagline{font-size:10.5px; font-weight:800; letter-spacing:.3px; background:rgba(255,255,255,.1); color:#8fe2a0; padding:3px 8px; border-radius:7px; display:inline-flex; gap:5px; align-items:center}
+.profit .boxes{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-top:12px}
+.profit .box{background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:var(--r); padding:10px 12px}
+.profit .box .bl{font-size:11px; color:#a9b8c9}
+.profit .box .bv{font-size:19px; font-weight:900; letter-spacing:-.5px; margin-top:3px}
+.t-good{color:#5fd25f} .t-warn{color:#f6c762} .t-crit{color:#f08585}
+
+/* ---------- סיכום כספי ---------- */
+.totals{width:100%; max-width:380px; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r); padding:14px}
+.totals .ln{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:5px 0; font-size:13px; color:var(--ink-2)}
+.totals .ln strong{color:var(--ink)}
+.totals .ln.grand{border-top:2px solid var(--ink); margin-top:8px; padding-top:10px; font-size:17px; font-weight:900; color:var(--ink)}
+.totals .ln.grand span:last-child{color:var(--brand)}
+
+/* ---------- טוסט / מודאל ---------- */
+#toast{
+  position:fixed; inset-inline-start:16px; bottom:16px; z-index:90; display:flex; align-items:center; gap:12px;
+  background:var(--ink); color:var(--surface); padding:11px 14px; border-radius:var(--r); box-shadow:var(--sh-2);
+  font-size:13px; font-weight:600; opacity:0; transform:translateY(10px); pointer-events:none; transition:opacity .2s, transform .2s;
+  max-width:min(92vw,440px);
+}
+#toast.on{opacity:1; transform:none; pointer-events:auto}
+#toast button{color:#8fc0ff; font-weight:800; font-size:12.5px; text-decoration:underline}
+.modal-bg{position:fixed; inset:0; z-index:95; background:rgba(8,12,18,.55); display:none; align-items:center; justify-content:center; padding:18px}
+.modal-bg.on{display:flex}
+.modal{background:var(--surface); border-radius:var(--r-lg); box-shadow:var(--sh-2); width:100%; max-width:430px; padding:20px; border:1px solid var(--line)}
+.modal h3{font-size:16px; font-weight:800}
+.modal p{color:var(--ink-2); font-size:13px; margin:8px 0 18px; line-height:1.6}
+.modal .acts{display:flex; gap:8px; justify-content:flex-start}
+
+/* ---------- גרפים ---------- */
+.chart-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:16px; box-shadow:var(--sh-1)}
+.chart-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px}
+.chart-head h3{font-size:14px; font-weight:800}
+.chart-head .sub{font-size:11.5px; color:var(--muted); margin-top:2px}
+.legend{display:flex; flex-wrap:wrap; gap:12px; margin-top:10px; font-size:11.5px; color:var(--ink-2); font-weight:600}
+.legend i{width:10px; height:10px; border-radius:3px; display:inline-block; margin-inline-end:5px}
+svg.viz{width:100%; height:auto; display:block; overflow:visible}
+svg.viz text{font-family:inherit}
+.ax{fill:var(--muted); font-size:10.5px}
+.gl{stroke:var(--grid); stroke-width:1}
+.bl{stroke:var(--axis); stroke-width:1}
+.vlabel{fill:var(--ink); font-size:11px; font-weight:800}
+.viz-tip{
+  position:fixed; z-index:92; pointer-events:none; opacity:0; transition:opacity .12s;
+  background:var(--ink); color:var(--surface); padding:7px 10px; border-radius:9px; font-size:12px; font-weight:600;
+  box-shadow:var(--sh-2); white-space:nowrap;
+}
+.viz-tip.on{opacity:1}
+.bar{transition:opacity .12s}
+.bar:hover{opacity:.82}
+.dtable{width:100%; border-collapse:collapse; font-size:12px; margin-top:10px}
+.dtable th,.dtable td{padding:5px 7px; border-bottom:1px solid var(--line); text-align:right}
+.dtable th{color:var(--muted); font-weight:700}
+
+/* ---------- כרטיס לקוח ---------- */
+.client{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--sh-1); overflow:hidden}
+.client-hd{padding:15px 16px; border-bottom:1px solid var(--line); background:var(--surface-2); display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:flex-start}
+.client-hd h3{font-size:16px; font-weight:900; letter-spacing:-.3px}
+.client-meta{display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:var(--ink-2); margin-top:6px; font-weight:600}
+.qrow{display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r); padding:11px 13px}
+.qrow + .qrow{margin-top:8px}
+.note-int{font-size:12px; background:var(--warn-soft); color:var(--warn-ink); border:1px solid var(--warn); padding:6px 10px; border-radius:9px; margin-top:8px; display:inline-block}
+
+/* ---------- טופס פרטי לקוח ---------- */
+.f-grid{display:grid; grid-template-columns:repeat(12,1fr); gap:12px}
+.c2{grid-column:span 2} .c3{grid-column:span 3} .c4{grid-column:span 4}
+.c6{grid-column:span 6} .c12{grid-column:span 12}
+@media (max-width:860px){
+  .c2,.c3,.c4{grid-column:span 6}
+}
+@media (max-width:560px){
+  .c2,.c3,.c4,.c6{grid-column:span 12}
+  .wrap{padding:0 10px}
+  body{font-size:13.5px}
+  .kpi .k-val{font-size:21px}
+}
+
+/* ---------- בחירת סעיף מהמחירון ---------- */
+.picker{display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end}
+.picker .f{flex:1 1 200px; min-width:150px}
+.catlist{max-height:230px; overflow-y:auto; border:1px solid var(--line); border-radius:var(--r); margin-top:10px; background:var(--surface-2)}
+.catlist button{display:block; width:100%; text-align:right; padding:9px 12px; border-bottom:1px solid var(--line); font-size:12.5px}
+.catlist button:hover{background:var(--brand-soft)}
+.catlist button:last-child{border-bottom:none}
+.catlist .c-top{display:flex; justify-content:space-between; gap:10px; font-weight:700}
+.catlist .c-sub{font-size:11px; color:var(--muted); margin-top:2px}
+
+/* ---------- מדרגות תשלום ---------- */
+.ms-row{display:flex; gap:8px; align-items:center; margin-bottom:7px}
+.ms-row .inp{flex:1}
+.ms-row .inp-pct{max-width:92px}
+
+/* ---------- ניווט שטח ומסלול יומי ---------- */
+.navbar-mini{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; align-items:center}
+.navchip{display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:700; padding:5px 10px; border-radius:8px; border:1px solid var(--line-2); background:var(--surface-2); color:var(--ink); min-height:32px}
+.navchip:hover{background:var(--brand-soft); border-color:var(--brand)}
+.navchip[disabled]{opacity:.45; cursor:not-allowed}
+.navchip.waze{border-color:#36b5ff; color:#0b6fa4}
+:root[data-theme="dark"] .navchip.waze{color:#7fd2ff}
+.geo-ok{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:800; color:var(--good-ink); background:var(--good-soft); border:1px solid var(--good); border-radius:8px; padding:3px 9px}
+.access-grid{display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; background:var(--surface-2); border:1px dashed var(--line-2); border-radius:var(--r); padding:10px 12px}
+.access-grid .fld{flex:1 1 140px; min-width:110px}
+.tagpill{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; padding:2px 8px; border-radius:7px; background:var(--surface-3); color:var(--ink-2); border:1px solid var(--line-2)}
+#routeBar{position:fixed; inset-inline:10px; bottom:10px; z-index:88; display:none; background:var(--surface); border:1px solid var(--brand); border-radius:var(--r-lg); box-shadow:var(--sh-2); padding:12px 14px; max-width:1160px; margin:0 auto; max-height:56vh; overflow-y:auto}
+#routeBar.on{display:block}
+.stop{display:flex; gap:9px; align-items:center; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line)}
+.stop:last-child{border-bottom:none}
+#demoBar{background:linear-gradient(90deg,#6250d6,#2a78d6); color:#fff; padding:9px 0}
+#demoBar .in{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; font-size:12.5px; font-weight:700}
+#demoBar .btn{background:rgba(255,255,255,.16); color:#fff; border-color:rgba(255,255,255,.3)}
+#demoBar .btn:hover{background:rgba(255,255,255,.28)}
+body.route-open{padding-bottom:min(58vh,340px)}
+body.route-open #toast{bottom:auto; top:78px}
+.stop-n{width:23px; height:23px; border-radius:50%; background:var(--brand); color:#fff; font-size:11.5px; font-weight:800; display:grid; place-items:center; flex:0 0 auto}
+
+/* ---------- מסמך להדפסה ---------- */
+.doc-only{display:none}
+.scrollbars::-webkit-scrollbar{width:9px;height:9px}
+.scrollbars::-webkit-scrollbar-thumb{background:var(--line-2); border-radius:5px}
+
+@page{ size:A4; margin:12mm 10mm; }
+@media print{
+  :root, :root[data-theme="dark"], :root[data-theme="light"]{
+    color-scheme: light !important;
+    --bg:#fff; --surface:#fff; --surface-2:#fff; --surface-3:#fff;
+    --ink:#000; --ink-2:#222; --muted:#555; --line:#bbb; --line-2:#999;
+    --brand:#15509a; --brand-2:#15509a; --brand-soft:#fff;
+    --good-soft:#fff; --warn-soft:#fff; --crit-soft:#fff;
+    --good-ink:#000; --warn-ink:#000; --crit-ink:#000;
+    --sh-1:none; --sh-2:none;
+  }
+  html,body{background:#fff !important; color:#000 !important; font-size:10.5pt; padding:0; width:auto; overflow:visible}
+  .tbl-wrap{overflow:visible !important}
+  .card,.totals,.profit{break-inside:auto}
+  main,.panel,.stack,.card{max-width:100% !important; overflow:visible !important}
+  .totals{margin-inline-start:auto}
+  table.t{table-layout:auto; width:100% !important}
+  table.t th,table.t td{min-width:0 !important; width:auto !important}
+  table.t th:first-child,table.t td:first-child{width:26px !important}
+  .no-print,header.app,nav.tabs,#toast,.modal-bg{display:none !important}
+  .doc-only{display:block !important}
+  main{padding:0}
+  .wrap{max-width:none; padding:0}
+  .card{border:none !important; box-shadow:none !important; border-radius:0}
+  .card-pad{padding:0}
+  .stack>*+*{margin-top:10px}
+  .inp,.sel,.ta{border:none !important; background:transparent !important; padding:0 !important; min-height:0; -webkit-appearance:none; appearance:none; font-weight:inherit}
+  .ta{resize:none; overflow:visible; height:auto}
+  table.t th{background:#f1f1f1 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; color:#000}
+  table.t{font-size:9.5pt}
+  table.t td,table.t th{padding:5px 6px; border-bottom:1px solid #ddd}
+  thead{display:table-header-group}
+  tr,.qrow{page-break-inside:avoid}
+  .totals{max-width:none; border:1px solid #bbb; background:#fafafa !important; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+  .doc-sign{page-break-inside:avoid}
+  .badge{border:1px solid #999 !important; background:#fff !important; color:#000 !important}
+  .switch input{display:none !important}
+  .doc-only.inline{display:inline !important}
+  td .doc-only{display:block !important; font-weight:inherit; white-space:normal; word-break:break-word}
+  table.t td input{display:none !important}
+  #quoteDate{display:none !important}
+  input::placeholder,textarea::placeholder{color:transparent !important}
+}
+</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button id="toastAct" hidden></button></div>
+
+<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <h3 id="modalTitle">אישור פעולה</h3>
+    <p id="modalBody"></p>
+    <div class="acts">
+      <button class="btn btn-danger" id="modalOk">כן, בצע</button>
+      <button class="btn btn-ghost" id="modalCancel">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<header class="app no-print">
+  <div class="wrap">
+    <div class="hdr-top">
+      <div class="brand">
+        <div class="mark">PQ</div>
+        <div>
+          <h1>ProQuote CRM <span class="pill">v3</span></h1>
+          <p>הצעות מחיר, בקרת רווחיות וזיכרון לקוחות — עובד גם ללא אינטרנט</p>
+        </div>
+      </div>
+      <div class="hdr-actions">
+        <span id="saveState" class="hint" style="color:#9fb0c4"></span>
+        <button class="btn btn-ghost btn-sm" id="themeBtn" title="מצב כהה / בהיר (D)">🌙 כהה</button>
+        <button class="btn btn-ghost btn-sm" id="backupBtn" title="הורדת קובץ גיבוי מלא">⬇️ גיבוי</button>
+        <label class="btn btn-ghost btn-sm" title="שחזור מקובץ גיבוי">⬆️ שחזור
+          <input type="file" id="restoreFile" accept=".json" class="sr-only" />
+        </label>
+        <button class="btn btn-primary btn-sm" id="newQuoteBtn" title="הצעה חדשה (Ctrl+N)">+ הצעה חדשה</button>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tb-builder" aria-selected="true" data-tab="builder">📝 עורך הצעה</button>
+      <button class="tab" role="tab" id="tb-clients" aria-selected="false" data-tab="clients">👥 לקוחות <span class="count" id="cntClients">0</span></button>
+      <button class="tab" role="tab" id="tb-dash" aria-selected="false" data-tab="dash">📊 ניתוח עסקי</button>
+      <button class="tab" role="tab" id="tb-catalog" aria-selected="false" data-tab="catalog">⚙️ מחירון <span class="count" id="cntCatalog">0</span></button>
+      <button class="tab" role="tab" id="tb-settings" aria-selected="false" data-tab="settings">🏢 הגדרות</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============================== עורך הצעה ============================== -->
+<section class="panel on" id="p-builder" role="tabpanel" aria-labelledby="tb-builder">
+  <div class="stack">
+
+    <div class="card card-pad no-print" id="rcBanner" hidden style="border-inline-start:6px solid var(--warn); background:var(--warn-soft)">
+      <div class="row-between">
+        <div>
+          <h4 style="font-size:13.5px; font-weight:900; color:var(--warn-ink)">🔔 לקוח חוזר זוהה במאגר</h4>
+          <p id="rcText" style="font-size:12px; color:var(--warn-ink); margin:3px 0 0"></p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <button class="btn btn-dark btn-sm" id="rcHistory">📂 היסטוריית הלקוח</button>
+          <button class="btn btn-ghost btn-sm" id="rcFill">⤵️ מלא פרטים מההצעה האחרונה</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- כותרת המסמך -->
+    <div class="card card-pad">
+      <div class="row-between" style="align-items:flex-start; padding-bottom:14px; border-bottom:1px solid var(--line)">
+        <div>
+          <h2 id="docBizName" style="font-size:21px; font-weight:900; letter-spacing:-.5px"></h2>
+          <p id="docBizSlogan" style="font-size:12.5px; color:var(--ink-2); font-weight:600; margin-top:2px"></p>
+          <p class="mini" style="margin-top:5px">
+            טלפון: <strong id="docBizPhone" class="tnum"></strong>
+            <span id="docBizEmailWrap" hidden> | דוא"ל: <strong id="docBizEmail"></strong></span>
+            | עוסק/ח.פ: <strong id="docBizId" class="tnum"></strong>
+            <span id="docBizAddrWrap" hidden> | <strong id="docBizAddr"></strong></span>
+          </p>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:7px">
+          <img id="docLogo" alt="לוגו העסק" style="max-height:62px; max-width:190px; object-fit:contain" hidden />
+          <div style="display:flex; align-items:center; gap:7px; flex-wrap:wrap; justify-content:flex-end">
+            <span class="badge b-mut">הצעת מחיר #<span id="qNum" class="tnum"></span></span>
+            <span class="badge b-mut doc-only" id="docStatusBadge"></span>
+            <select class="sel inp-sm no-print" id="qStatus" style="width:auto" aria-label="סטטוס ההצעה">
+              <option value="draft">📝 טיוטה</option>
+              <option value="sent">📤 נשלחה ללקוח</option>
+              <option value="approved">✅ אושרה לביצוע</option>
+              <option value="rejected">❌ לא נסגרה</option>
+            </select>
+          </div>
+          <div style="display:flex; align-items:center; gap:7px">
+            <span id="expiryBadge" class="badge b-mut"></span>
+          </div>
+          <span class="mini" style="font-size:10px">מסמך זה הינו הצעת מחיר ואינו מהווה חשבונית מס</span>
+        </div>
+      </div>
+
+      <div class="no-print" style="margin-top:14px; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r); padding:10px 12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between">
+        <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap">
+          <strong style="font-size:12.5px; color:var(--ink-2)">🔍 לקוח קיים?</strong>
+          <select class="sel inp-sm" id="quickClient" style="min-width:250px; width:auto" aria-label="בחירת לקוח קיים מהמאגר"></select>
+        </div>
+        <span class="hint">כל שמירה מעדכנת אוטומטית את כרטיס הלקוח</span>
+      </div>
+
+      <div class="f-grid" style="margin-top:14px">
+        <div class="c4"><label class="lbl" for="clientName">שם הלקוח / החברה *</label>
+          <input class="inp" id="clientName" placeholder="למשל: משפחת לוי" autocomplete="off" /></div>
+        <div class="c3"><label class="lbl" for="clientPhone">טלפון נייד (לוואטסאפ) *</label>
+          <input class="inp tnum" id="clientPhone" type="tel" inputmode="tel" placeholder="050-0000000" autocomplete="off" />
+          <span class="hint" id="phoneHint"></span></div>
+        <div class="c3"><label class="lbl" for="clientEmail">דוא"ל הלקוח</label>
+          <input class="inp" id="clientEmail" type="email" placeholder="name@mail.com" autocomplete="off" /></div>
+        <div class="c2"><label class="lbl" for="quoteDate">תאריך ההצעה</label>
+          <input class="inp tnum" id="quoteDate" type="date" />
+          <span class="doc-only tnum" id="docQuoteDate"></span></div>
+        <div class="c6"><label class="lbl" for="clientAddress">כתובת / עיר העבודה</label>
+          <input class="inp" id="clientAddress" placeholder="למשל: רוטשילד 45, פתח תקווה" autocomplete="off" />
+          <div class="navbar-mini no-print">
+            <button class="navchip waze" id="navWaze" type="button" title="פתח ניווט ב-Waze">🚗 Waze</button>
+            <button class="navchip" id="navGmaps" type="button" title="פתח ב-Google Maps">🗺️ Google Maps</button>
+            <button class="navchip" id="navPin" type="button" title="שמירת נקודת GPS מדויקת מהמיקום הנוכחי">📍 דקור מיקום GPS</button>
+            <span id="geoBadge" hidden></span>
+            <span class="hint" id="cityHint"></span>
+          </div>
+        </div>
+        <div class="c4"><label class="lbl" for="projectTitle">תיאור הפרויקט</label>
+          <input class="inp" id="projectTitle" placeholder="למשל: שיפוץ חדר רחצה קומפלט" autocomplete="off" /></div>
+        <div class="c2"><label class="lbl" for="qValidity">תוקף (ימים)</label>
+          <input class="inp tnum" id="qValidity" type="number" min="0" max="365" step="1" /></div>
+        <div class="c12 no-print">
+          <label class="lbl">🔑 גישה לאתר ולוגיסטיקה בשטח (פנימי — לא מודפס ללקוח)</label>
+          <div class="access-grid">
+            <div class="fld" style="flex:0 1 110px"><label class="lbl" for="acFloor">קומה</label>
+              <input class="inp inp-sm" id="acFloor" placeholder="3" autocomplete="off" /></div>
+            <div class="fld" style="flex:0 0 auto"><label class="lbl">מעלית</label>
+              <label class="switch" style="min-height:32px"><input type="checkbox" id="acElevator" /><span>יש מעלית</span></label></div>
+            <div class="fld" style="flex:0 1 150px"><label class="lbl" for="acCode">קוד כניסה / שער</label>
+              <input class="inp inp-sm" id="acCode" placeholder="#1234" autocomplete="off" /></div>
+            <div class="fld" style="flex:2 1 240px"><label class="lbl" for="acParking">הערות חניה / גישה</label>
+              <input class="inp inp-sm" id="acParking" placeholder="חניה בכחול-לבן ברחוב המקביל / פריקה מאחור" autocomplete="off" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- רווחיות פנימית -->
+    <div class="profit no-print" id="profitPanel">
+      <div class="row-between">
+        <div>
+          <span class="tagline">🔒 פנימי לעיניך בלבד — לא מודפס ללקוח</span>
+          <h3 style="font-size:14.5px; font-weight:800; margin-top:7px; color:#dbe4ee">בקרת עלויות ורווח נקי בעסקה</h3>
+          <p id="pMarginNote" style="font-size:11.5px; margin-top:4px; color:#a9b8c9"></p>
+        </div>
+        <div class="boxes" style="flex:1 1 440px">
+          <div class="box"><div class="bl">הכנסה (לפני מע"מ)</div><div class="bv tnum" id="pRevenue">₪0</div></div>
+          <div class="box"><div class="bl">עלות ישירה שלך</div><div class="bv tnum t-crit" id="pCost">₪0</div></div>
+          <div class="box"><div class="bl">רווח נקי משוער</div><div class="bv tnum t-good" id="pProfit">₪0</div></div>
+          <div class="box"><div class="bl">אחוז רווחיות</div><div class="bv tnum t-good" id="pMargin">0%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- בחירת סעיפים -->
+    <div class="card card-pad no-print">
+      <div class="picker">
+        <div class="f" style="flex:0 0 190px">
+          <label class="lbl" for="catFilter">קטגוריה</label>
+          <select class="sel" id="catFilter"></select>
+        </div>
+        <div class="f" style="flex:2 1 280px">
+          <label class="lbl" for="catSearch">חיפוש סעיף במחירון</label>
+          <input class="inp" id="catSearch" placeholder="הקלד מילה — למשל: צביעה, גבס, אסלה…" autocomplete="off" />
+        </div>
+        <button class="btn btn-ghost" id="addBlankBtn">+ שורה חופשית</button>
+      </div>
+      <div class="catlist scrollbars" id="catList"></div>
+    </div>
+
+    <!-- טבלת סעיפים -->
+    <div class="card" style="overflow:hidden">
+      <div class="tbl-wrap scrollbars">
+        <table class="t">
+          <thead>
+            <tr>
+              <th style="width:34px; text-align:center">#</th>
+              <th style="width:120px">קטגוריה</th>
+              <th style="min-width:230px">תיאור העבודה</th>
+              <th style="width:74px; text-align:center">יחידה</th>
+              <th style="width:72px; text-align:center">כמות</th>
+              <th style="width:96px; text-align:center">מחיר יח'</th>
+              <th style="width:70px; text-align:center" class="no-print">הנחה %</th>
+              <th style="width:96px; text-align:center" class="no-print col-cost">עלות יח' (פנימי)</th>
+              <th style="width:84px; text-align:center" class="no-print col-cost">רווח %</th>
+              <th style="width:104px; text-align:left">סה"כ</th>
+              <th style="width:104px; text-align:center" class="no-print">פעולות</th>
+            </tr>
+          </thead>
+          <tbody id="itemRows"></tbody>
+        </table>
+      </div>
+      <div class="empty no-print" id="itemsEmpty" hidden>
+        <div class="big">🧱</div>
+        <h3>אין עדיין סעיפים בהצעה</h3>
+        <p class="hint">בחר סעיף מהמחירון למעלה, או הוסף שורה חופשית.</p>
+      </div>
+
+      <div class="card-pad divide" style="display:flex; flex-wrap:wrap; gap:18px; justify-content:space-between; background:var(--surface-2)">
+        <div style="flex:1 1 320px">
+          <label class="lbl no-print" for="quoteNotes">הערות, תנאי תשלום ואחריות (מופיעים ללקוח)</label>
+          <h4 class="doc-only" style="font-size:11pt; font-weight:800; margin-bottom:5px">תנאים, הערות ואחריות</h4>
+          <textarea class="ta" id="quoteNotes" rows="5"></textarea>
+          <div class="no-print" style="display:flex; gap:7px; margin-top:7px; flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" id="termsDefaultBtn">↩️ טען תנאים מברירת מחדל</button>
+            <button class="btn btn-ghost btn-sm" id="termsSaveBtn">💾 שמור כברירת מחדל</button>
+          </div>
+
+          <div class="no-print" style="margin-top:14px">
+            <label class="lbl">מדרגות תשלום (סכום/אחוז) — מודפס ללקוח</label>
+            <div id="msRows"></div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:4px">
+              <button class="btn btn-ghost btn-sm" id="msAdd">+ הוסף מדרגה</button>
+              <button class="btn btn-ghost btn-sm" id="msPreset">⚡ 30/40/30</button>
+              <span class="hint" id="msWarn"></span>
+            </div>
+          </div>
+
+          <div class="no-print" style="margin-top:14px">
+            <label class="lbl" for="internalNotes" style="color:var(--warn-ink)">🔒 הערות פנימיות (נשמר בכרטיס הלקוח, לא מודפס)</label>
+            <input class="inp" id="internalNotes" placeholder="קומה 3 בלי מעלית, חניה בעייתית…" style="background:var(--warn-soft); border-color:var(--warn)" />
+          </div>
+        </div>
+
+        <div class="totals">
+          <div class="ln"><span>סכום ביניים</span><strong class="tnum" id="tSubtotal">₪0</strong></div>
+          <div class="ln"><span>הנחות שורה</span><strong class="tnum" id="tLineDisc">₪0</strong></div>
+          <div class="ln">
+            <label class="switch"><input type="checkbox" id="wasteOn" /><span>פחת / חומרי עזר</span></label>
+            <span style="display:flex; align-items:center; gap:6px">
+              <input class="inp inp-sm tnum no-print" id="wastePct" type="number" min="0" max="100" step="0.5" style="width:58px; text-align:center" aria-label="אחוז פחת" />
+              <strong class="tnum" id="tWaste">₪0</strong>
+            </span>
+          </div>
+          <div class="ln">
+            <span style="display:flex; align-items:center; gap:6px">הנחה
+              <select class="sel inp-sm no-print" id="discMode" style="width:auto" aria-label="סוג הנחה">
+                <option value="amount">₪</option>
+                <option value="pct">%</option>
+              </select>
+            </span>
+            <span style="display:flex; align-items:center; gap:6px">
+              <input class="inp inp-sm tnum no-print" id="discVal" type="number" min="0" step="1" style="width:84px; text-align:center" aria-label="גובה הנחה" />
+              <strong class="tnum" id="tDiscount">₪0</strong>
+            </span>
+          </div>
+          <div class="ln" style="border-top:1px solid var(--line); margin-top:5px; padding-top:8px"><span>סה"כ לפני מע"מ</span><strong class="tnum" id="tBeforeVat">₪0</strong></div>
+          <div class="ln"><span>מע"מ (<span id="vatLbl" class="tnum">18</span>%)</span><strong class="tnum" id="tVat">₪0</strong></div>
+          <div class="ln no-print"><label class="switch"><input type="checkbox" id="roundOn" /><span>עיגול לשקל שלם</span></label><span class="hint" id="tRoundNote"></span></div>
+          <div class="ln grand"><span>סה"כ כולל מע"מ</span><span class="tnum" id="tGrand">₪0</span></div>
+        </div>
+      </div>
+
+      <!-- בלוק הדפסה: מדרגות + חתימות -->
+      <div class="doc-only card-pad">
+        <div id="docMilestones"></div>
+        <div class="doc-sign" style="margin-top:26px; display:flex; justify-content:space-between; gap:30px; font-size:10pt">
+          <div style="flex:1">
+            <p style="font-weight:800; margin-bottom:26px">אישור הלקוח להזמנת העבודה:</p>
+            <p>שם מלא: ____________________ &nbsp; חתימה: ____________________ &nbsp; תאריך: ____________</p>
+          </div>
+          <div style="text-align:left">
+            <p style="font-weight:800; margin-bottom:26px">חתימת המבצע:</p>
+            <p>____________________</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- פעולות -->
+    <div class="card card-pad no-print" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between">
+      <div style="display:flex; flex-wrap:wrap; gap:9px">
+        <button class="btn btn-dark" id="saveBtn" title="Ctrl+S">💾 שמור בתיק הלקוח</button>
+        <button class="btn btn-primary" id="printBtn" title="Ctrl+P">📄 הפק PDF מעוצב</button>
+        <button class="btn btn-ghost" id="dupBtn">📋 שכפל כהצעה חדשה</button>
+        <button class="btn btn-ghost" id="clearItemsBtn">🧹 נקה סעיפים</button>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:9px; align-items:center">
+        <select class="sel inp-sm" id="waMode" style="width:auto" aria-label="סוג הודעת וואטסאפ">
+          <option value="short">סיכום קצר</option>
+          <option value="full">פירוט סעיפים מלא</option>
+        </select>
+        <button class="btn btn-good" id="waBtn">📲 שלח לוואטסאפ</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== לקוחות ============================== -->
+<section class="panel no-print" id="p-clients" role="tabpanel" aria-labelledby="tb-clients">
+  <div class="stack">
+    <div class="kpis">
+      <div class="kpi"><div class="k-lbl">👥 לקוחות במאגר</div><div class="k-val tnum" id="kClients">0</div><div class="k-sub" id="kClientsSub"></div></div>
+      <div class="kpi"><div class="k-lbl">📄 הצעות שהופקו</div><div class="k-val tnum" id="kQuotes">0</div><div class="k-sub" id="kQuotesSub"></div></div>
+      <div class="kpi"><div class="k-lbl">⏳ צבר פתוח (Pipeline)</div><div class="k-val tnum" style="color:var(--warn-ink)" id="kPipeline">₪0</div><div class="k-sub" id="kPipelineSub"></div></div>
+      <div class="kpi"><div class="k-lbl">✅ עסקאות שאושרו</div><div class="k-val tnum" style="color:var(--good-ink)" id="kApproved">₪0</div><div class="k-sub" id="kApprovedSub"></div></div>
+      <div class="kpi"><div class="k-lbl">🎯 אחוז סגירה</div><div class="k-val tnum" id="kWin">0%</div><div class="k-sub" id="kWinSub"></div></div>
+      <div class="kpi"><div class="k-lbl">📈 רווחיות ממוצעת</div><div class="k-val tnum" id="kMargin">0%</div><div class="k-sub">בהצעות שאושרו</div></div>
+    </div>
+
+    <div class="card card-pad" id="followBox" hidden style="border-inline-start:6px solid var(--warn)">
+      <h3 class="sec-title">🔔 דורש טיפול ממך</h3>
+      <div id="followUps" style="margin-top:10px; display:grid; gap:8px"></div>
+    </div>
+
+    <div class="card card-pad" style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end">
+      <div style="flex:2 1 260px"><label class="lbl" for="crmSearch">חיפוש</label>
+        <input class="inp" id="crmSearch" placeholder="🔍 שם, טלפון, עיר, פרויקט או מספר הצעה…" autocomplete="off" /></div>
+      <div style="flex:1 1 160px"><label class="lbl" for="crmStatus">סינון סטטוס</label>
+        <select class="sel" id="crmStatus">
+          <option value="ALL">כל ההצעות</option>
+          <option value="approved">✅ אושרו</option>
+          <option value="sent">📤 בהמתנה לתשובה</option>
+          <option value="draft">📝 טיוטות</option>
+          <option value="rejected">❌ לא נסגרו</option>
+          <option value="expired">⏰ פג תוקף</option>
+        </select></div>
+      <div style="flex:1 1 150px"><label class="lbl" for="crmCity">עיר / אזור</label>
+        <select class="sel" id="crmCity"><option value="ALL">כל הערים</option></select></div>
+      <div style="flex:1 1 160px"><label class="lbl" for="crmSort">מיון</label>
+        <select class="sel" id="crmSort">
+          <option value="recent">פעילות אחרונה</option>
+          <option value="value">שווי מאושר (גבוה→נמוך)</option>
+          <option value="quotes">מספר הצעות</option>
+          <option value="name">שם לקוח (א-ת)</option>
+        </select></div>
+    </div>
+
+    <div class="card card-pad" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between">
+      <div>
+        <h3 class="sec-title">🚗 מסלול פגישות יומי</h3>
+        <p class="sec-sub">סמן לקוחות בכרטיסים למטה — ותקבל מסלול נהיגה משולב בלחיצה אחת.</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" id="routeSelectWaiting">⏳ בחר את כל הממתינים בעיר המסוננת</button>
+        <button class="btn btn-ghost btn-sm" id="routeClear">נקה בחירה</button>
+      </div>
+    </div>
+
+    <div id="crmList" class="stack"></div>
+  </div>
+</section>
+
+<!-- ============================== ניתוח עסקי ============================== -->
+<section class="panel no-print" id="p-dash" role="tabpanel" aria-labelledby="tb-dash">
+  <div class="stack">
+    <div class="card card-pad row-between">
+      <div>
+        <h2 class="sec-title">📊 ניתוח עסקי</h2>
+        <p class="sec-sub">כל הנתונים מחושבים מההצעות השמורות במכשיר שלך.</p>
+      </div>
+      <div style="display:flex; gap:9px; align-items:flex-end; flex-wrap:wrap">
+        <div><label class="lbl" for="dashRange">טווח</label>
+          <select class="sel inp-sm" id="dashRange" style="width:auto">
+            <option value="6">6 חודשים אחרונים</option>
+            <option value="12" selected>12 חודשים אחרונים</option>
+            <option value="0">הכל</option>
+          </select></div>
+        <button class="btn btn-ghost btn-sm" id="dashTableBtn">🔢 הצג כטבלה</button>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="k-lbl">💰 הכנסות מאושרות (לפני מע"מ)</div><div class="k-val tnum" id="dRev">₪0</div><div class="k-sub" id="dRevSub"></div></div>
+      <div class="kpi"><div class="k-lbl">📦 עלויות ישירות</div><div class="k-val tnum" id="dCost">₪0</div><div class="k-sub">חומרים + עבודה לפי המחירון</div></div>
+      <div class="kpi"><div class="k-lbl">🏆 רווח נקי מצטבר</div><div class="k-val tnum" style="color:var(--good-ink)" id="dProfit">₪0</div><div class="k-sub" id="dProfitSub"></div></div>
+      <div class="kpi"><div class="k-lbl">🧾 הצעה ממוצעת</div><div class="k-val tnum" id="dAvg">₪0</div><div class="k-sub" id="dAvgSub"></div></div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); align-items:start">
+      <div class="chart-card">
+        <div class="chart-head">
+          <div><h3>הכנסות מאושרות לפי חודש</h3><div class="sub">לפני מע"מ, לפי תאריך ההצעה</div></div>
+        </div>
+        <div id="chartMonthly"></div>
+        <div id="tableMonthly" hidden></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div><h3>פילוח הצעות לפי סטטוס</h3><div class="sub">שווי כולל מע"מ</div></div>
+        </div>
+        <div id="chartStatus"></div>
+        <div id="tableStatus" hidden></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div><h3>קטגוריות מובילות ברווח</h3><div class="sub">מתוך הצעות שאושרו</div></div>
+        </div>
+        <div id="chartCats"></div>
+        <div id="tableCats" hidden></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div><h3>לקוחות מובילים</h3><div class="sub">סך עבודות מאושרות</div></div>
+        </div>
+        <div id="chartClients"></div>
+        <div id="tableClients" hidden></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== מחירון ============================== -->
+<section class="panel no-print" id="p-catalog" role="tabpanel" aria-labelledby="tb-catalog">
+  <div class="stack">
+    <div class="card card-pad">
+      <div class="row-between" style="padding-bottom:12px; border-bottom:1px solid var(--line)">
+        <div>
+          <h2 class="sec-title">⚙️ המחירון הקבוע שלך</h2>
+          <p class="sec-sub">הגדר מחיר ללקוח ועלות פנימית — ותבנה הצעה בשטח ב-30 שניות. ניתן לערוך כל שדה ישירות בטבלה.</p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" id="catExportBtn">⬇️ ייצוא CSV</button>
+          <label class="btn btn-ghost btn-sm">⬆️ ייבוא CSV<input type="file" id="catImportFile" accept=".csv,text/csv" class="sr-only" /></label>
+          <button class="btn btn-danger btn-sm" id="catResetBtn">איפוס לברירת מחדל</button>
+        </div>
+      </div>
+
+      <div class="f-grid" style="margin-top:14px; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r); padding:12px">
+        <div class="c3"><label class="lbl" for="ncCat">קטגוריה</label><input class="inp inp-sm" id="ncCat" placeholder="אינסטלציה" list="catCats" />
+          <datalist id="catCats"></datalist></div>
+        <div class="c4"><label class="lbl" for="ncDesc">תיאור הסעיף *</label><input class="inp inp-sm" id="ncDesc" placeholder="החלפת צנרת מים ודלוחין" /></div>
+        <div class="c2"><label class="lbl" for="ncUnit">יחידה</label><input class="inp inp-sm" id="ncUnit" placeholder='מ"ר' /></div>
+        <div class="c2"><label class="lbl" for="ncPrice">מחיר ללקוח</label><input class="inp inp-sm tnum" id="ncPrice" type="number" min="0" step="any" /></div>
+        <div class="c2"><label class="lbl" for="ncCost">עלות שלך</label><input class="inp inp-sm tnum" id="ncCost" type="number" min="0" step="any" /></div>
+        <div class="c12"><button class="btn btn-primary" id="catAddBtn" style="width:100%">+ הוסף סעיף למחירון</button></div>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-top:14px">
+        <div style="flex:2 1 240px"><label class="lbl" for="catalogSearch">חיפוש במחירון</label>
+          <input class="inp inp-sm" id="catalogSearch" placeholder="🔍 סנן לפי תיאור או קטגוריה…" /></div>
+        <div style="flex:1 1 220px"><label class="lbl" for="bulkPct">עדכון מחירים גורף (%)</label>
+          <div style="display:flex; gap:7px">
+            <input class="inp inp-sm tnum" id="bulkPct" type="number" step="0.5" placeholder="למשל 5 או 5-" />
+            <button class="btn btn-ghost btn-sm" id="bulkApply">עדכן מחירי לקוח</button>
+          </div></div>
+      </div>
+    </div>
+
+    <div class="card" style="overflow:hidden">
+      <div class="tbl-wrap scrollbars">
+        <table class="t">
+          <thead><tr>
+            <th style="width:130px">קטגוריה</th>
+            <th style="min-width:250px">תיאור העבודה</th>
+            <th style="width:80px; text-align:center">יחידה</th>
+            <th style="width:100px; text-align:center">מחיר ללקוח</th>
+            <th style="width:100px; text-align:center" class="col-cost">עלות שלך</th>
+            <th style="width:92px; text-align:center">רווח ליח'</th>
+            <th style="width:76px; text-align:center">רווח %</th>
+            <th style="width:70px; text-align:center">בשימוש</th>
+            <th style="width:74px; text-align:center">פעולות</th>
+          </tr></thead>
+          <tbody id="catalogRows"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="catalogEmpty" hidden><div class="big">⚙️</div><h3>אין סעיפים תואמים</h3></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== הגדרות ============================== -->
+<section class="panel no-print" id="p-settings" role="tabpanel" aria-labelledby="tb-settings">
+  <div class="stack" style="max-width:820px; margin:0 auto">
+    <div class="card card-pad">
+      <h2 class="sec-title">🏢 פרטי העסק</h2>
+      <p class="sec-sub">הפרטים נשמרים במכשיר ומופיעים בראש כל הצעת מחיר ובהודעות הוואטסאפ.</p>
+      <div class="f-grid" style="margin-top:14px">
+        <div class="c6"><label class="lbl" for="bizName">שם העסק / בעל המקצוע</label><input class="inp" id="bizName" /></div>
+        <div class="c6"><label class="lbl" for="bizSlogan">תת-כותרת / תחומי התמחות</label><input class="inp" id="bizSlogan" /></div>
+        <div class="c4"><label class="lbl" for="bizPhone">טלפון</label><input class="inp tnum" id="bizPhone" /></div>
+        <div class="c4"><label class="lbl" for="bizEmail">דוא"ל</label><input class="inp" id="bizEmail" type="email" /></div>
+        <div class="c4"><label class="lbl" for="bizId">עוסק מורשה / ח.פ</label><input class="inp tnum" id="bizId" /></div>
+        <div class="c6"><label class="lbl" for="bizAddress">כתובת העסק</label><input class="inp" id="bizAddress" /></div>
+        <div class="c2"><label class="lbl" for="vatRate">מע"מ (%)</label><input class="inp tnum" id="vatRate" type="number" min="0" max="100" step="0.5" /></div>
+        <div class="c2"><label class="lbl" for="targetMargin">רווחיות יעד (%)</label><input class="inp tnum" id="targetMargin" type="number" min="0" max="99" step="1" /></div>
+        <div class="c2"><label class="lbl" for="defValidity">תוקף הצעה (ימים)</label><input class="inp tnum" id="defValidity" type="number" min="0" max="365" /></div>
+        <div class="c4"><label class="lbl" for="followDays">התראת מעקב אחרי (ימים)</label><input class="inp tnum" id="followDays" type="number" min="1" max="120" /></div>
+        <div class="c12"><label class="lbl" for="defTerms">תנאים ברירת מחדל להצעה חדשה</label><textarea class="ta" id="defTerms" rows="4"></textarea></div>
+        <div class="c12">
+          <label class="lbl">לוגו העסק (נדחס אוטומטית לשמירה חסכונית)</label>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap">
+            <input type="file" id="logoFile" accept="image/*" />
+            <img id="logoPreview" alt="תצוגה מקדימה של הלוגו" style="max-height:52px; max-width:160px; object-fit:contain; border:1px solid var(--line); border-radius:8px; padding:4px" hidden />
+            <button class="btn btn-ghost btn-sm" id="logoClear">הסר לוגו</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-pad">
+      <h2 class="sec-title">💾 נתונים וגיבוי</h2>
+      <p class="sec-sub" id="storageInfo"></p>
+      <div style="display:flex; flex-wrap:wrap; gap:9px; margin-top:12px">
+        <button class="btn btn-ghost" id="backupBtn2">⬇️ גיבוי JSON מלא</button>
+        <button class="btn btn-ghost" id="exportQuotesCsv">⬇️ ייצוא הצעות ל-CSV (לאקסל)</button>
+        <label class="btn btn-ghost">⬆️ שחזור מגיבוי<input type="file" id="restoreFile2" accept=".json" class="sr-only" /></label>
+        <button class="btn btn-danger" id="wipeBtn">🗑️ מחיקת כל הנתונים</button>
+      </div>
+      <p class="hint" style="margin-top:12px">
+        כל המידע נשמר מקומית בדפדפן של המכשיר הזה בלבד (localStorage) ואינו נשלח לשום שרת.
+        מחיקת היסטוריית הדפדפן עלולה למחוק אותו — מומלץ להוריד גיבוי פעם בשבוע.
+      </p>
+    </div>
+
+    <div class="card card-pad">
+      <h2 class="sec-title">⌨️ קיצורי מקלדת</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); margin-top:10px; font-size:12.5px; color:var(--ink-2)">
+        <div><strong>Ctrl + S</strong> — שמירת ההצעה</div>
+        <div><strong>Ctrl + P</strong> — הפקת PDF</div>
+        <div><strong>Ctrl + N</strong> — הצעה חדשה</div>
+        <div><strong>Alt + 1..5</strong> — מעבר בין לשוניות</div>
+        <div><strong>D</strong> — מצב כהה/בהיר</div>
+        <div><strong>Esc</strong> — סגירת חלונית</div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div id="routeBar" class="no-print" role="region" aria-label="מסלול פגישות יומי"></div>
+<div class="viz-tip" id="vizTip"></div>
+<script>
+"use strict";
+/* ===================================================================
+   ProQuote CRM v3 — ליבה
+   ארכיטקטורה: state יחיד → חישוב טהור → רינדור. ללא תלות חיצונית.
+   =================================================================== */
+
+/* ------------------------------ עזרי בסיס ------------------------------ */
+const $  = (id) => document.getElementById(id);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = (v) => { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; };
+const r2  = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
+const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+if (typeof structuredClone !== 'function') { window.structuredClone = (o) => JSON.parse(JSON.stringify(o)); }
+const uid = (p='id') => p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const todayISO = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD בזמן מקומי
+
+function el(tag, props = {}, kids = []) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v === undefined || v === null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k === 'html') n.innerHTML = v;
+    else if (k === 'style') n.setAttribute('style', v);
+    else if (k.startsWith('on') && typeof v === 'function') n.addEventListener(k.slice(2), v);
+    else if (k === 'value') n.value = v;
+    else if (k === 'checked') n.checked = !!v;
+    else n.setAttribute(k, v);
+  }
+  (Array.isArray(kids) ? kids : [kids]).forEach(c => {
+    if (c === null || c === undefined || c === false) return;
+    n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  });
+  return n;
+}
+
+const ILS = new Intl.NumberFormat('he-IL', { style:'currency', currency:'ILS', maximumFractionDigits:0 });
+const ILS2 = new Intl.NumberFormat('he-IL', { style:'currency', currency:'ILS', minimumFractionDigits:2, maximumFractionDigits:2 });
+const money = (n) => ILS.format(Math.round(num(n)));
+const money2 = (n) => { const v = num(n); return Math.abs(v % 1) < 0.005 ? ILS.format(Math.round(v)) : ILS2.format(v); };
+const pct = (n) => `${Math.round(num(n))}%`;
+const MONTHS_HE = ['ינו','פבר','מרץ','אפר','מאי','יונ','יול','אוג','ספט','אוק','נוב','דצמ'];
+
+function dateHe(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  if (isNaN(d)) return iso;
+  return `${d.getDate()}.${d.getMonth()+1}.${String(d.getFullYear()).slice(2)}`;
+}
+function daysBetween(aISO, bISO) {
+  const a = new Date(aISO + 'T00:00:00'), b = new Date(bISO + 'T00:00:00');
+  if (isNaN(a) || isNaN(b)) return 0;
+  return Math.round((b - a) / 86400000);
+}
+function addDays(iso, d) {
+  const dt = new Date(iso + 'T00:00:00');
+  if (isNaN(dt)) return iso;
+  dt.setDate(dt.getDate() + d);
+  return dt.toLocaleDateString('sv-SE');
+}
+
+/* ----------------------- טלפון ישראלי: נרמול ותקינות ----------------------- */
+function digits(s) { return String(s ?? '').replace(/\D/g, ''); }
+function phoneLocal(s) {
+  let d = digits(s);
+  if (d.startsWith('972')) d = '0' + d.slice(3);
+  else if (d.startsWith('00972')) d = '0' + d.slice(5);
+  return d;
+}
+function phoneIntl(s) {
+  const d = phoneLocal(s);
+  if (!d) return '';
+  return d.startsWith('0') ? '972' + d.slice(1) : d;
+}
+function phonePretty(s) {
+  const d = phoneLocal(s);
+  if (d.length === 10 && d.startsWith('05')) return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`;
+  if (d.length === 9) return `${d.slice(0,2)}-${d.slice(2,5)}-${d.slice(5)}`;
+  return String(s ?? '');
+}
+function phoneValid(s) {
+  const d = phoneLocal(s);
+  return (d.length === 10 && d.startsWith('05')) || (d.length === 9 && d.startsWith('0') && d[1] !== '5');
+}
+
+/* --------------------- מיקום, ערים וקישורי ניווט (ללא API חיצוני) --------------------- */
+const IL_CITIES = ['תל אביב','תל אביב-יפו','ירושלים','חיפה','ראשון לציון','פתח תקווה','אשדוד','נתניה','באר שבע','בני ברק',
+  'חולון','רמת גן','אשקלון','רחובות','בת ים','בית שמש','כפר סבא','הרצליה','חדרה','מודיעין','רעננה','רמלה','לוד','גבעתיים',
+  'נהריה','קריית אתא','קריית גת','אילת','ראש העין','עפולה','טבריה','נצרת','אום אל-פחם','רהט','קריית מוצקין','קריית ביאליק',
+  'קריית ים','קריית אונו','אור יהודה','יהוד','נס ציונה','גבעת שמואל','יבנה','דימונה','נתיבות','שדרות','צפת','כרמיאל',
+  'מעלה אדומים','ביתר עילית','מודיעין עילית','אריאל','גן יבנה','קדימה','זכרון יעקב','פרדס חנה','בנימינה','טירת כרמל',
+  'נשר','יוקנעם','מגדל העמק','בית שאן','עכו','שפרעם','טייבה','טירה','קלנסווה','ג\'סר א-זרקא','אבן יהודה','הוד השרון',
+  'רמת השרון','שוהם','אלעד','חריש','מזכרת בתיה','קריית מלאכי','אופקים','ערד','מצפה רמון','קצרין','מעלות','שלומי'];
+
+/* חילוץ עיר מתוך כתובת חופשית — קודם לפי פסיק, אחרת לפי זיהוי שם עיר מוכר */
+function extractCity(address) {
+  const a = String(address ?? '').trim();
+  if (!a) return '';
+  const parts = a.split(',').map(x => x.trim()).filter(Boolean);
+  if (parts.length > 1) {
+    const last = parts[parts.length - 1];
+    if (last && !/^\d+$/.test(last)) return last.replace(/^(העיר|עיר)\s+/, '');
+  }
+  const hit = IL_CITIES.filter(c => a.includes(c)).sort((x, y) => y.length - x.length)[0];
+  return hit || '';
+}
+
+function validCoords(c) {
+  if (!c || typeof c !== 'object') return null;
+  const lat = num(c.lat), lng = num(c.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (lat === 0 && lng === 0) return null;
+  if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+  return { lat, lng };
+}
+
+/* יעד ניווט: נקודת GPS מדויקת אם קיימת, אחרת הכתובת החופשית */
+function navTarget(o) {
+  const c = validCoords(o && (o.clientCoords || o.coords));
+  if (c) return `${c.lat},${c.lng}`;
+  const addr = String((o && (o.clientAddress || o.address)) || '').trim();
+  return addr || '';
+}
+
+/* קישורי ניווט ישירים — deep links בלבד, בלי מפתח API ובלי ספריות */
+function buildNavLinks(address, coords) {
+  const c = validCoords(coords);
+  const addr = String(address ?? '').trim();
+  if (!c && !addr) return null;
+  const waze = c
+    ? `https://waze.com/ul?ll=${c.lat},${c.lng}&navigate=yes`
+    : `https://waze.com/ul?q=${encodeURIComponent(addr)}&navigate=yes`;
+  const gmaps = c
+    ? `https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lng}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
+  const apple = c
+    ? `https://maps.apple.com/?ll=${c.lat},${c.lng}&q=${encodeURIComponent(addr || 'יעד')}`
+    : `https://maps.apple.com/?q=${encodeURIComponent(addr)}`;
+  return { waze, gmaps, apple, hasCoords: !!c };
+}
+
+function openExternal(url) { window.open(url, '_blank', 'noopener'); }
+
+/* ------------------------------ מחירון ברירת מחדל ------------------------------ */
+const DEFAULT_CATALOG = [
+  { category:'צביעה ושפכטל', desc:'צביעת קירות בצבע אקרילי איכותי (2 שכבות כולל תיקוני שפכטל קלים)', unit:'מ"ר', price:45, cost:16 },
+  { category:'צביעה ושפכטל', desc:'החלקת קירות שפכטל אמריקאי מלא (3 שכבות + שיוף ופריימר)', unit:'מ"ר', price:110, cost:45 },
+  { category:'צביעה ושפכטל', desc:'צביעת תקרה בסיד סינטטי לבן מונע עובש', unit:'מ"ר', price:35, cost:12 },
+  { category:'צביעה ושפכטל', desc:'צביעת מסגרות/דלתות בתנור צבע סינטטי', unit:"יח'", price:390, cost:150 },
+  { category:'עבודות גבס', desc:'בניית קיר גבס תקני כולל בידוד צמר סלעים ופרופילים', unit:'מ"ר', price:240, cost:95 },
+  { category:'עבודות גבס', desc:'הנמכת תקרה מגבס ירוק/לבן כולל הכנה לתאורה שקועה', unit:'מ"ר', price:280, cost:110 },
+  { category:'עבודות גבס', desc:'ניסור וסגירת פתח בגבס כולל תיקון וצביעה', unit:"יח'", price:450, cost:170 },
+  { category:'הריסה ופינוי', desc:'פירוק ריצוף קיים ופינוי פסולת למכולה מורשית', unit:'מ"ר', price:95, cost:40 },
+  { category:'הריסה ופינוי', desc:'שבירת קיר בלוקים 10 ס"מ ופינוי פסולת בניין', unit:'מ"ר', price:160, cost:65 },
+  { category:'הריסה ופינוי', desc:'הזמנת מכולה לפינוי פסולת (עד 8 קוב) כולל אישורי שפיכה', unit:"יח'", price:1450, cost:1050 },
+  { category:'ריצוף וחיפוי', desc:'עבודת הדבקת ריצוף גרניט פורצלן (ללא עלות האריחים)', unit:'מ"ר', price:190, cost:85 },
+  { category:'ריצוף וחיפוי', desc:'חיפוי קירות חדר רחצה בקרמיקה עד גובה תקרה כולל רובה אקרילית', unit:'מ"ר', price:230, cost:100 },
+  { category:'ריצוף וחיפוי', desc:'התקנת פנלים / שיפולים כולל חיתוך ופינות', unit:'מ"א', price:48, cost:18 },
+  { category:'איטום', desc:'איטום רצפת חדר רחצה בשתי שכבות + יריעה מחוזקת בפינות', unit:'מ"ר', price:185, cost:70 },
+  { category:'אינסטלציה', desc:'החלפת צנרת מים ודלוחין קומפלט לחדר רחצה (SP / PEX)', unit:'קומפלט', price:4800, cost:1850 },
+  { category:'אינסטלציה', desc:'התקנת כלים סניטריים (אסלה תלויה + ניאגרה סמויה + כיור)', unit:"יח'", price:1200, cost:400 },
+  { category:'אינסטלציה', desc:'נקודת מים/ביוב חדשה במטבח כולל פתיחת קיר וסגירה', unit:"יח'", price:850, cost:320 },
+  { category:'חשמל ותאורה', desc:'הוספת נקודת חשמל / שקע כוח חדש בקיר קיים', unit:"יח'", price:280, cost:90 },
+  { category:'חשמל ותאורה', desc:'התקנת גוף תאורה / ספוט שקוע בתקרה', unit:"יח'", price:120, cost:35 },
+  { category:'חשמל ותאורה', desc:'החלפת לוח חשמל דירתי כולל ממסר פחת ובדיקת חשמלאי מוסמך', unit:'קומפלט', price:3900, cost:1700 },
+  { category:'אלומיניום ונגרות', desc:'הרכבת דלת פנים כולל משקוף ואביזרים (ללא עלות הדלת)', unit:"יח'", price:620, cost:240 },
+  { category:'כללי', desc:'ניהול, תיאום ופיקוח צמוד על הפרויקט', unit:'יום', price:950, cost:0 }
+].map((c, i) => ({ id:'c' + (i+1), usage:0, ...c }));
+
+const DEFAULT_TERMS =
+  '1. תוקף הצעת המחיר: 14 ימים מתאריך הפקתה.\n' +
+  '2. המחירים אינם כוללים מע"מ אלא אם צוין אחרת בסיכום.\n' +
+  '3. כל שינוי או תוספת מעבר לכתב הכמויות יתומחר בנפרד ובכתב לפני ביצוע.\n' +
+  '4. אחריות מלאה לשנתיים על עבודות האינסטלציה והגמר.\n' +
+  '5. פינוי פסולת ונזקי בלתי צפוי בתשתיות קיימות אינם כלולים אלא אם צוינו כסעיף.';
+
+/* ------------------------------ State + מיגרציות ------------------------------ */
+/* מצב הדגמה: ?demo=1 טוען נתוני דוגמה למפתח אחסון נפרד — לא נוגע בנתונים האמיתיים */
+const DEMO = /(^|[?&])demo=1(&|$)/.test(location.search);
+const KEY = DEMO ? 'proquote_crm_v3_demo' : 'proquote_crm_v3';
+const LEGACY_KEYS = ['pro_quote_builder_v2_crm', 'pro_quote_builder_v1'];
+const SCHEMA = 3;
+
+function blankQuote(over = {}) {
+  return {
+    id: uid('q'), schema: SCHEMA, quoteNum: 1001, status: 'draft',
+    clientName: '', clientPhone: '', clientEmail: '', clientAddress: '',
+    clientCity: '', clientCoords: null,
+    siteAccess: { floor:'', elevator:false, code:'', parking:'' },
+    projectTitle: '', quoteDate: todayISO(), validityDays: 14,
+    wasteEnabled: false, wastePct: 10, discountMode: 'amount', discountVal: 0,
+    roundTotal: true, vatRate: 18, notes: DEFAULT_TERMS, internalNotes: '',
+    milestones: [], items: [], createdAt: new Date().toISOString(), updatedAt: null, savedAt: null,
+    ...over
+  };
+}
+
+const DEFAULTS = {
+  schema: SCHEMA,
+  business: { name:'', slogan:'', phone:'', email:'', id:'', address:'', logo:'', vatRate:18 },
+  settings: { targetMargin:35, defaultValidity:14, followUpDays:7, defaultTerms:DEFAULT_TERMS, theme:'light' },
+  catalog: DEFAULT_CATALOG.map(c => ({ ...c })),
+  current: blankQuote(),
+  quotes: []
+};
+
+let S = structuredClone(DEFAULTS);
+
+/* נרמול כל הצעה למודל v3 — כולל הקפאת מע"מ היסטורי */
+function normalizeQuote(q, fallbackVat) {
+  const o = blankQuote();
+  const n = {
+    ...o, ...q,
+    schema: SCHEMA,
+    quoteNum: Math.round(num(q.quoteNum)) || o.quoteNum,
+    status: ['draft','sent','approved','rejected'].includes(q.status) ? q.status : 'sent',
+    clientName: String(q.clientName ?? ''),
+    clientPhone: String(q.clientPhone ?? ''),
+    clientEmail: String(q.clientEmail ?? ''),
+    clientAddress: String(q.clientAddress ?? ''),
+    clientCity: String(q.clientCity ?? '') || extractCity(q.clientAddress),
+    clientCoords: validCoords(q.clientCoords),
+    siteAccess: {
+      floor: String(q.siteAccess?.floor ?? ''),
+      elevator: !!(q.siteAccess?.elevator),
+      code: String(q.siteAccess?.code ?? ''),
+      parking: String(q.siteAccess?.parking ?? '')
+    },
+    projectTitle: String(q.projectTitle ?? ''),
+    quoteDate: /^\d{4}-\d{2}-\d{2}$/.test(q.quoteDate || '') ? q.quoteDate : todayISO(),
+    validityDays: clamp(Math.round(num(q.validityDays ?? 14)), 0, 365),
+    wasteEnabled: !!q.wasteEnabled,
+    wastePct: clamp(num(q.wastePct ?? 10), 0, 100),
+    discountMode: q.discountMode === 'pct' ? 'pct' : 'amount',
+    discountVal: Math.max(0, num(q.discountVal ?? q.discount ?? 0)),
+    roundTotal: q.roundTotal !== undefined ? !!q.roundTotal : true,
+    // מע"מ מוקפא לכל הצעה: מסמך היסטורי לא משתנה כששיעור המע"מ בהגדרות מתעדכן
+    vatRate: clamp(num(q.vatRate ?? fallbackVat ?? 18), 0, 100),
+    notes: String(q.notes ?? ''),
+    internalNotes: String(q.internalNotes ?? ''),
+    milestones: Array.isArray(q.milestones) ? q.milestones.map(m => ({
+      label: String(m.label ?? ''), mode: m.mode === 'amount' ? 'amount' : 'pct', val: Math.max(0, num(m.val))
+    })) : [],
+    items: Array.isArray(q.items) ? q.items.map(it => ({
+      category: String(it.category ?? 'כללי'),
+      desc: String(it.desc ?? ''),
+      unit: String(it.unit ?? "יח'"),
+      qty: num(it.qty), price: num(it.price), cost: num(it.cost),
+      discPct: clamp(num(it.discPct), 0, 100)
+    })) : []
+  };
+  delete n.discount;
+  return n;
+}
+
+function loadState() {
+  let raw = null, legacy = false;
+  try { raw = localStorage.getItem(KEY); } catch (e) { raw = null; }
+  if (!raw) {
+    for (const k of LEGACY_KEYS) {
+      try { const v = localStorage.getItem(k); if (v) { raw = v; legacy = true; break; } } catch (e) {}
+    }
+  }
+  if (!raw) { S.current.quoteNum = 1001; return; }
+
+  let data;
+  try { data = JSON.parse(raw); } catch (e) { console.error('state parse failed', e); return; }
+  if (!data || typeof data !== 'object') return;
+
+  const biz = data.business || {};
+  S.business = { ...DEFAULTS.business, ...biz, logo: String(biz.logo ?? biz.logoBase64 ?? ''), vatRate: clamp(num(biz.vatRate ?? 18), 0, 100) };
+  S.settings = { ...DEFAULTS.settings, ...(data.settings || {}) };
+  if (!S.settings.defaultTerms) S.settings.defaultTerms = DEFAULT_TERMS;
+
+  if (Array.isArray(data.catalog) && data.catalog.length) {
+    S.catalog = data.catalog.map((c, i) => ({
+      id: String(c.id || 'cat' + i), category: String(c.category || 'כללי'), desc: String(c.desc || ''),
+      unit: String(c.unit || "יח'"), price: num(c.price), cost: num(c.cost), usage: Math.max(0, Math.round(num(c.usage)))
+    })).filter(c => c.desc);
+  }
+
+  const srcQuotes = Array.isArray(data.quotes) ? data.quotes : (Array.isArray(data.savedQuotes) ? data.savedQuotes : []);
+  S.quotes = srcQuotes.map(q => normalizeQuote(q, S.business.vatRate));
+  // ניקוי כפילויות מספר הצעה (באג מוכר בגרסאות קודמות)
+  const seen = new Set();
+  S.quotes.forEach(q => { while (seen.has(q.quoteNum)) q.quoteNum++; seen.add(q.quoteNum); });
+
+  S.current = normalizeQuote(data.current || data.currentQuote || {}, S.business.vatRate);
+  if (!data.current && !data.currentQuote) S.current.quoteNum = nextQuoteNum();
+  if (legacy) saveState(true);
+}
+
+let saveTimer = null, lastSaveOk = true;
+function saveState(immediate = false) {
+  clearTimeout(saveTimer);
+  const doSave = () => {
+    S.schema = SCHEMA;
+    try {
+      localStorage.setItem(KEY, JSON.stringify(S));
+      lastSaveOk = true;
+      setSaveState('✔ נשמר');
+    } catch (e) {
+      lastSaveOk = false;
+      setSaveState('⚠ שמירה נכשלה');
+      toast('שמירה מקומית נכשלה — ייתכן שהאחסון מלא. הורד גיבוי והסר לוגו כבד.', null, 7000);
+      console.error(e);
+    }
+  };
+  if (immediate) doSave(); else saveTimer = setTimeout(doSave, 350);
+}
+function setSaveState(txt) {
+  const n = $('saveState'); if (!n) return;
+  n.textContent = txt;
+  clearTimeout(setSaveState._t);
+  setSaveState._t = setTimeout(() => { if (lastSaveOk) n.textContent = ''; }, 2500);
+}
+function nextQuoteNum() {
+  let mx = 1000;
+  S.quotes.forEach(q => { if (q.quoteNum > mx) mx = q.quoteNum; });
+  if (S.current && S.current.quoteNum > mx) mx = S.current.quoteNum;
+  return mx + 1;
+}
+
+/* ------------------------------ מנוע כספי ------------------------------ */
+/* חישוב טהור: אותה פונקציה משמשת את העורך, ה-CRM והגרפים */
+function calc(q) {
+  let gross = 0, lineDisc = 0, cost = 0;
+  const lines = (q.items || []).map(it => {
+    const base = r2(num(it.qty) * num(it.price));
+    const d = r2(base * clamp(num(it.discPct), 0, 100) / 100);
+    const total = r2(base - d);
+    const lcost = r2(num(it.qty) * num(it.cost));
+    gross += base; lineDisc += d; cost += lcost;
+    const lprofit = total - lcost;
+    return { base, disc: d, total, cost: lcost, profit: lprofit, margin: total > 0 ? (lprofit / total) * 100 : 0 };
+  });
+  const subtotal = r2(gross - lineDisc);
+  const waste = q.wasteEnabled ? r2(subtotal * clamp(num(q.wastePct), 0, 100) / 100) : 0;
+  const preDisc = r2(subtotal + waste);
+  const discount = q.discountMode === 'pct'
+    ? r2(preDisc * clamp(num(q.discountVal), 0, 100) / 100)
+    : r2(Math.min(Math.max(0, num(q.discountVal)), preDisc));
+  const beforeVat = r2(Math.max(0, preDisc - discount));
+  const vatRate = clamp(num(q.vatRate ?? 18), 0, 100);
+  const vat = r2(beforeVat * vatRate / 100);
+  const rawGrand = r2(beforeVat + vat);
+  const grand = q.roundTotal ? Math.round(rawGrand) : rawGrand;
+  const rounding = r2(grand - rawGrand);
+  const profit = r2(beforeVat - cost);
+  const margin = beforeVat > 0 ? (profit / beforeVat) * 100 : 0;
+  return { lines, gross:r2(gross), lineDisc:r2(lineDisc), subtotal, waste, discount, beforeVat, vatRate, vat, rawGrand, grand, rounding, cost:r2(cost), profit, margin };
+}
+
+function expiryISO(q) { return q.validityDays > 0 ? addDays(q.quoteDate, q.validityDays) : ''; }
+function isExpired(q) {
+  if (q.status !== 'sent' || !q.validityDays) return false;
+  return daysBetween(todayISO(), expiryISO(q)) < 0;
+}
+const STATUS_META = {
+  draft:    { label:'טיוטה',        icon:'📝', cls:'b-mut',  color:'var(--muted)' },
+  sent:     { label:'נשלחה ללקוח',  icon:'📤', cls:'b-warn', color:'var(--warn)' },
+  approved: { label:'אושרה לביצוע', icon:'✅', cls:'b-good', color:'var(--good)' },
+  rejected: { label:'לא נסגרה',     icon:'❌', cls:'b-crit', color:'var(--crit)' },
+  expired:  { label:'פג תוקף',      icon:'⏰', cls:'b-crit', color:'var(--serious)' }
+};
+function statusKey(q) { return isExpired(q) ? 'expired' : (q.status || 'sent'); }
+function statusBadge(q) {
+  const k = statusKey(q), m = STATUS_META[k];
+  return el('span', { class:'badge ' + m.cls, text:`${m.icon} ${m.label}` });
+}
+
+/* ------------------------------ טוסט ומודאל ------------------------------ */
+let toastTimer = null;
+function toast(msg, action = null, ms = 3200) {
+  const box = $('toast'), btn = $('toastAct');
+  $('toastMsg').textContent = msg;
+  btn.hidden = !action;
+  btn.onclick = null;
+  if (action) {
+    btn.textContent = action.label;
+    btn.onclick = () => { box.classList.remove('on'); action.fn(); };
+  }
+  box.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => box.classList.remove('on'), ms);
+}
+function confirmBox(title, body, okLabel = 'כן, בצע') {
+  return new Promise(resolve => {
+    $('modalTitle').textContent = title;
+    $('modalBody').textContent = body;
+    $('modalOk').textContent = okLabel;
+    const bg = $('modalBg');
+    bg.classList.add('on');
+    const done = (v) => { bg.classList.remove('on'); $('modalOk').onclick = null; $('modalCancel').onclick = null; resolve(v); };
+    $('modalOk').onclick = () => done(true);
+    $('modalCancel').onclick = () => done(false);
+    bg.onclick = (e) => { if (e.target === bg) done(false); };
+    setTimeout(() => $('modalOk').focus(), 30);
+  });
+}
+
+/* ------------------------------ ניווט לשוניות ------------------------------ */
+const TABS = ['builder','clients','dash','catalog','settings'];
+let activeTab = 'builder';
+function switchTab(name) {
+  if (!TABS.includes(name)) return;
+  activeTab = name;
+  TABS.forEach(t => {
+    $('p-' + t).classList.toggle('on', t === name);
+    const b = $('tb-' + t);
+    b.setAttribute('aria-selected', String(t === name));
+  });
+  if (name !== 'clients') { $('routeBar')?.classList.remove('on'); document.body.classList.remove('route-open'); }
+  if (name === 'clients') renderCRM();
+  if (name === 'dash') renderDashboard();
+  if (name === 'catalog') renderCatalog();
+  if (name === 'settings') renderStorageInfo();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* ------------------------------ עורך: טעינת שדות ------------------------------ */
+function fillBuilderInputs() {
+  const q = S.current;
+  $('qNum').textContent = q.quoteNum;
+  $('qStatus').value = q.status;
+  $('clientName').value = q.clientName;
+  $('clientPhone').value = q.clientPhone;
+  $('clientEmail').value = q.clientEmail;
+  $('clientAddress').value = q.clientAddress;
+  $('projectTitle').value = q.projectTitle;
+  $('quoteDate').value = q.quoteDate;
+  $('qValidity').value = q.validityDays;
+  $('wasteOn').checked = q.wasteEnabled;
+  $('wastePct').value = q.wastePct;
+  $('discMode').value = q.discountMode;
+  $('discVal').value = q.discountVal;
+  $('roundOn').checked = q.roundTotal;
+  $('quoteNotes').value = q.notes;
+  $('internalNotes').value = q.internalNotes;
+  $('acFloor').value = q.siteAccess.floor;
+  $('acElevator').checked = !!q.siteAccess.elevator;
+  $('acCode').value = q.siteAccess.code;
+  $('acParking').value = q.siteAccess.parking;
+  renderGeoUI();
+  syncBizHeader();
+  renderMilestones();
+  renderItems();
+  updateExpiryBadge();
+  checkReturning();
+  validatePhoneUI();
+}
+
+function syncBizHeader() {
+  const b = S.business;
+  $('docBizName').textContent = b.name || 'שם העסק שלך (הגדר בלשונית הגדרות)';
+  $('docBizSlogan').textContent = b.slogan || '';
+  $('docBizPhone').textContent = b.phone ? phonePretty(b.phone) : '—';
+  $('docBizId').textContent = b.id || '—';
+  $('docBizEmail').textContent = b.email || '';
+  $('docBizEmailWrap').hidden = !b.email;
+  $('docBizAddr').textContent = b.address || '';
+  $('docBizAddrWrap').hidden = !b.address;
+  $('vatLbl').textContent = S.current.vatRate;
+  const lg = $('docLogo');
+  if (b.logo) { lg.src = b.logo; lg.hidden = false; } else { lg.hidden = true; lg.removeAttribute('src'); }
+  const m = STATUS_META[statusKey(S.current)];
+  $('docStatusBadge').textContent = `${m.icon} ${m.label}`;
+}
+
+function updateExpiryBadge() {
+  const q = S.current, b = $('expiryBadge');
+  $('docQuoteDate').textContent = dateHe(q.quoteDate);
+  if (!q.validityDays) { b.className = 'badge b-mut'; b.textContent = 'ללא תוקף מוגדר'; return; }
+  const exp = expiryISO(q), left = daysBetween(todayISO(), exp);
+  if (left < 0) { b.className = 'badge b-crit'; b.textContent = `⏰ פג תוקף ב-${dateHe(exp)}`; }
+  else if (left <= 3) { b.className = 'badge b-warn'; b.textContent = `⏳ בתוקף עוד ${left} ימים (עד ${dateHe(exp)})`; }
+  else { b.className = 'badge b-brand'; b.textContent = `בתוקף עד ${dateHe(exp)}`; }
+}
+
+function validatePhoneUI() {
+  const inp = $('clientPhone'), v = inp.value.trim();
+  const hint = $('phoneHint');
+  if (!v) { inp.classList.remove('err'); hint.textContent = ''; return; }
+  if (phoneValid(v)) { inp.classList.remove('err'); hint.textContent = '✔ ' + phonePretty(v); hint.style.color = 'var(--good-ink)'; }
+  else { inp.classList.add('err'); hint.textContent = 'מספר לא תקין — בדוק ספרות'; hint.style.color = 'var(--crit-ink)'; }
+}
+
+/* ------------------------------ ניווט ונעילת מיקום בעורך ------------------------------ */
+function renderGeoUI() {
+  const q = S.current;
+  const links = buildNavLinks(q.clientAddress, q.clientCoords);
+  $('navWaze').disabled = !links;
+  $('navGmaps').disabled = !links;
+  const badge = $('geoBadge');
+  badge.textContent = '';
+  if (q.clientCoords) {
+    badge.hidden = false;
+    badge.className = 'geo-ok';
+    badge.appendChild(document.createTextNode(`✔ מיקום GPS מדויק נשמר (${q.clientCoords.lat.toFixed(4)}, ${q.clientCoords.lng.toFixed(4)})`));
+    badge.appendChild(el('button', { class:'btn-icon', id:'geoClear', title:'מחק את נקודת ה-GPS', text:'✕', style:'min-height:20px; width:20px; padding:0' }));
+  } else {
+    badge.hidden = true;
+  }
+  $('cityHint').textContent = q.clientCity ? `עיר שזוהתה: ${q.clientCity}` : '';
+}
+
+$('navWaze').addEventListener('click', () => {
+  const l = buildNavLinks(S.current.clientAddress, S.current.clientCoords);
+  if (!l) { toast('אין כתובת או נקודת GPS לניווט'); return; }
+  openExternal(l.waze);
+});
+$('navGmaps').addEventListener('click', () => {
+  const l = buildNavLinks(S.current.clientAddress, S.current.clientCoords);
+  if (!l) { toast('אין כתובת או נקודת GPS לניווט'); return; }
+  openExternal(l.gmaps);
+});
+$('navPin').addEventListener('click', () => {
+  if (!navigator.geolocation) { toast('הדפדפן הזה לא תומך באיתור מיקום'); return; }
+  const btn = $('navPin');
+  btn.disabled = true;
+  btn.textContent = '📡 מאתר מיקום…';
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      S.current.clientCoords = { lat: r6(pos.coords.latitude), lng: r6(pos.coords.longitude) };
+      if (!S.current.clientAddress.trim()) {
+        S.current.clientAddress = 'נקודת GPS מהשטח';
+        $('clientAddress').value = S.current.clientAddress;
+      }
+      btn.disabled = false; btn.textContent = '📍 עדכן מיקום GPS';
+      renderGeoUI(); saveState(true);
+      const acc = Math.round(num(pos.coords.accuracy));
+      toast(`המיקום נשמר${acc ? ` (דיוק ±${acc} מ')` : ''}`);
+    },
+    (err) => {
+      btn.disabled = false; btn.textContent = '📍 דקור מיקום GPS';
+      const msg = err.code === 1 ? 'הדפדפן חסם גישה למיקום — אשר הרשאת מיקום לאתר'
+        : err.code === 3 ? 'האיתור ארך זמן רב מדי — נסה שוב בחוץ או עם GPS פעיל'
+        : 'לא הצלחתי לאתר את המיקום';
+      toast(msg, null, 5200);
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+});
+$('geoBadge').addEventListener('click', (e) => {
+  if (!e.target.closest('#geoClear')) return;
+  S.current.clientCoords = null;
+  renderGeoUI(); saveState(true);
+  toast('נקודת ה-GPS נמחקה');
+});
+const ACCESS_MAP = { acFloor:'floor', acCode:'code', acParking:'parking' };
+Object.entries(ACCESS_MAP).forEach(([id, f]) => $(id).addEventListener('input', () => {
+  S.current.siteAccess[f] = $(id).value; saveState();
+}));
+$('acElevator').addEventListener('change', () => { S.current.siteAccess.elevator = $('acElevator').checked; saveState(); });
+const r6 = (n) => Math.round(num(n) * 1e6) / 1e6;
+
+/* ------------------------------ עורך: שורות הסעיפים ------------------------------ */
+function marginClass(m) { return m >= S.settings.targetMargin ? 't-good' : (m >= S.settings.targetMargin * 0.6 ? 't-warn' : 't-crit'); }
+function marginCssColor(m) { return m >= S.settings.targetMargin ? 'var(--good-ink)' : (m >= S.settings.targetMargin * 0.6 ? 'var(--warn-ink)' : 'var(--crit-ink)'); }
+
+function renderItems() {
+  const tb = $('itemRows');
+  tb.textContent = '';
+  const q = S.current;
+  $('itemsEmpty').hidden = q.items.length > 0;
+
+  q.items.forEach((it, i) => {
+    const mkInp = (field, opts = {}) => el('input', {
+      class: 'inp inp-sm' + (opts.cls ? ' ' + opts.cls : ''),
+      type: opts.type || 'text',
+      step: opts.type === 'number' ? 'any' : null,
+      min: opts.type === 'number' ? '0' : null,
+      max: opts.max || null,
+      value: it[field],
+      'data-i': i, 'data-f': field,
+      'aria-label': opts.label || field,
+      style: opts.style || ''
+    });
+
+    // לכל תא טקסט יש גם גרסת-הדפסה (span) כדי שתיאורים ארוכים לא ייחתכו ב-PDF
+    const cell = (field, opts) => el('td', { class: opts && opts.td ? opts.td : null }, [
+      mkInp(field, opts || {}),
+      el('span', { class:'doc-only', 'data-print':field + ':' + i, text:String(it[field] ?? '') })
+    ]);
+    const tr = el('tr', { 'data-row': i }, [
+      el('td', { style:'text-align:center; color:var(--muted); font-weight:800', text:String(i+1) }),
+      cell('category', { label:'קטגוריה', style:'font-weight:700; font-size:12px' }),
+      cell('desc', { label:'תיאור', style:'font-weight:600' }),
+      cell('unit', { label:'יחידה', style:'text-align:center' }),
+      cell('qty', { type:'number', label:'כמות', style:'text-align:center; font-weight:800' }),
+      cell('price', { type:'number', label:'מחיר יחידה', style:'text-align:center; font-weight:800; color:var(--brand-2)' }),
+      el('td', { class:'no-print' }, mkInp('discPct', { type:'number', max:'100', label:'הנחת שורה', style:'text-align:center' })),
+      el('td', { class:'no-print col-cost' }, mkInp('cost', { type:'number', label:'עלות יחידה', style:'text-align:center; color:var(--crit-ink); font-weight:700' })),
+      el('td', { class:'no-print col-cost', style:'text-align:center' }, el('span', { class:'tnum', 'data-margin':i, style:'font-weight:800; font-size:12px' })),
+      el('td', { class:'cell-total tnum', 'data-total':i }),
+      el('td', { class:'no-print', style:'text-align:center' }, [
+        el('div', { style:'display:flex; gap:2px; justify-content:center' }, [
+          el('button', { class:'btn-icon', 'data-act':'up', 'data-i':i, title:'הזז למעלה', text:'↑' }),
+          el('button', { class:'btn-icon', 'data-act':'down', 'data-i':i, title:'הזז למטה', text:'↓' }),
+          el('button', { class:'btn-icon', 'data-act':'dup', 'data-i':i, title:'שכפל שורה', text:'⧉' }),
+          el('button', { class:'btn-icon danger', 'data-act':'del', 'data-i':i, title:'מחק שורה', text:'✕' })
+        ])
+      ])
+    ]);
+    tb.appendChild(tr);
+  });
+  recalcUI();
+}
+
+function updateRowCells(i, fin) {
+  const t = document.querySelector(`[data-total="${i}"]`);
+  const m = document.querySelector(`[data-margin="${i}"]`);
+  const L = fin.lines[i];
+  if (!L) return;
+  if (t) t.textContent = money2(L.total);
+  if (m) {
+    m.textContent = L.total > 0 ? pct(L.margin) : '—';
+    m.style.color = marginCssColor(L.margin);
+    m.title = `רווח בשורה: ${money2(L.profit)}`;
+  }
+}
+
+function recalcUI() {
+  const q = S.current, fin = calc(q);
+  q.items.forEach((_, i) => updateRowCells(i, fin));
+
+  $('tSubtotal').textContent = money2(fin.gross);
+  $('tLineDisc').textContent = fin.lineDisc ? '−' + money2(fin.lineDisc) : money2(0);
+  $('tWaste').textContent = money2(fin.waste);
+  $('tDiscount').textContent = fin.discount ? '−' + money2(fin.discount) : money2(0);
+  $('tBeforeVat').textContent = money2(fin.beforeVat);
+  $('vatLbl').textContent = fin.vatRate;
+  $('tVat').textContent = money2(fin.vat);
+  $('tGrand').textContent = money(fin.grand);
+  $('tRoundNote').textContent = q.roundTotal && Math.abs(fin.rounding) >= 0.005 ? `עיגול: ${fin.rounding > 0 ? '+' : '−'}${money2(Math.abs(fin.rounding))}` : '';
+
+  $('pRevenue').textContent = money(fin.beforeVat);
+  $('pCost').textContent = money(fin.cost);
+  $('pProfit').textContent = money(fin.profit);
+  $('pMargin').textContent = pct(fin.margin);
+
+  const panel = $('profitPanel');
+  panel.classList.remove('m-warn','m-crit');
+  const pm = $('pMargin'), pp = $('pProfit');
+  pm.className = 'bv tnum ' + marginClass(fin.margin);
+  pp.className = 'bv tnum ' + marginClass(fin.margin);
+  const tgt = S.settings.targetMargin;
+  if (fin.margin < tgt * 0.6) panel.classList.add('m-crit');
+  else if (fin.margin < tgt) panel.classList.add('m-warn');
+
+  const note = $('pMarginNote');
+  if (!q.items.length) note.textContent = 'הוסף סעיפים כדי לראות את הרווחיות בזמן אמת.';
+  else if (fin.margin >= tgt) note.textContent = `מעל יעד הרווחיות שלך (${tgt}%) — אפשר לשלוח בראש שקט.`;
+  else {
+    const needed = fin.cost > 0 ? r2(fin.cost / (1 - tgt/100)) : 0;
+    note.textContent = `מתחת ליעד (${tgt}%). כדי להגיע ליעד צריך מחיר של ${money(needed)} לפני מע"מ (פער של ${money(Math.max(0, needed - fin.beforeVat))}).`;
+  }
+  renderMilestoneWarn(fin);
+  saveState();
+}
+
+/* האזנה מרוכזת: עדכון ממוקד בלי רינדור מחדש (לא מאבד מיקוד הקלדה) */
+$('itemRows').addEventListener('input', (e) => {
+  const t = e.target;
+  const i = t.dataset.i, f = t.dataset.f;
+  if (i === undefined || !f) return;
+  const idx = +i, it = S.current.items[idx];
+  if (!it) return;
+  if (['qty','price','cost','discPct'].includes(f)) {
+    let v = num(t.value);
+    if (f === 'discPct') v = clamp(v, 0, 100);
+    if (v < 0) v = 0;
+    it[f] = v;
+  } else {
+    it[f] = t.value;
+  }
+  const mirror = document.querySelector(`[data-print="${f}:${idx}"]`);
+  if (mirror) mirror.textContent = String(it[f] ?? '');
+  S.current.updatedAt = new Date().toISOString();
+  recalcUI();
+});
+
+$('itemRows').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-act]');
+  if (!btn) return;
+  const i = +btn.dataset.i, act = btn.dataset.act, arr = S.current.items;
+  if (!arr[i]) return;
+  if (act === 'del') {
+    const removed = arr.splice(i, 1)[0];
+    renderItems();
+    toast('השורה נמחקה', { label:'בטל', fn: () => { arr.splice(i, 0, removed); renderItems(); } });
+  } else if (act === 'dup') {
+    arr.splice(i + 1, 0, { ...arr[i] });
+    renderItems();
+  } else if (act === 'up' && i > 0) {
+    [arr[i-1], arr[i]] = [arr[i], arr[i-1]];
+    renderItems();
+  } else if (act === 'down' && i < arr.length - 1) {
+    [arr[i+1], arr[i]] = [arr[i], arr[i+1]];
+    renderItems();
+  }
+});
+
+/* ------------------------------ בחירת סעיף מהמחירון ------------------------------ */
+function renderCatFilter() {
+  const sel = $('catFilter');
+  const cats = Array.from(new Set(S.catalog.map(c => c.category))).sort((a,b)=>a.localeCompare(b,'he'));
+  const prev = sel.value;
+  sel.textContent = '';
+  sel.appendChild(el('option', { value:'ALL', text:`כל הקטגוריות (${S.catalog.length})` }));
+  cats.forEach(c => sel.appendChild(el('option', { value:c, text:c })));
+  if (prev && (prev === 'ALL' || cats.includes(prev))) sel.value = prev;
+  $('cntCatalog').textContent = S.catalog.length;
+  const dl = $('catCats');
+  dl.textContent = '';
+  cats.forEach(c => dl.appendChild(el('option', { value:c })));
+}
+
+function renderCatPicker() {
+  const box = $('catList');
+  const f = $('catFilter').value || 'ALL';
+  const term = ($('catSearch').value || '').trim().toLowerCase();
+  const list = S.catalog
+    .filter(c => f === 'ALL' || c.category === f)
+    .filter(c => !term || (c.desc + ' ' + c.category + ' ' + c.unit).toLowerCase().includes(term))
+    .sort((a,b) => (b.usage||0) - (a.usage||0));
+
+  box.textContent = '';
+  if (!list.length) {
+    box.appendChild(el('div', { class:'empty', style:'padding:22px' }, el('p', { class:'hint', text:'אין סעיף תואם. אפשר להוסיף שורה חופשית, או סעיף חדש בלשונית המחירון.' })));
+    return;
+  }
+  list.slice(0, 60).forEach(c => {
+    const marg = c.price > 0 ? ((c.price - c.cost) / c.price) * 100 : 0;
+    box.appendChild(el('button', { type:'button', 'data-cat-id':c.id }, [
+      el('div', { class:'c-top' }, [
+        el('span', { text:c.desc }),
+        el('span', { class:'tnum', style:'color:var(--brand-2); white-space:nowrap', text:`${money(c.price)} / ${c.unit}` })
+      ]),
+      el('div', { class:'c-sub' }, [
+        el('span', { text:c.category }),
+        el('span', { text:' · ' }),
+        el('span', { style:`color:${marginCssColor(marg)}`, text:`רווח ${pct(marg)}` }),
+        c.usage ? el('span', { text:` · שימושים: ${c.usage}` }) : null
+      ])
+    ]));
+  });
+}
+
+$('catList').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-cat-id]');
+  if (!b) return;
+  const c = S.catalog.find(x => x.id === b.dataset.catId);
+  if (!c) return;
+  S.current.items.push({ category:c.category, desc:c.desc, unit:c.unit, qty:1, price:c.price, cost:c.cost, discPct:0 });
+  c.usage = (c.usage || 0) + 1;
+  renderItems();
+  toast(`נוסף: ${c.desc.slice(0, 40)}${c.desc.length > 40 ? '…' : ''}`);
+  const tb = $('itemRows').lastElementChild;
+  if (tb) tb.querySelector('[data-f="qty"]')?.focus();
+});
+
+/* ------------------------------ מדרגות תשלום ------------------------------ */
+function renderMilestones() {
+  const box = $('msRows');
+  box.textContent = '';
+  S.current.milestones.forEach((m, i) => {
+    box.appendChild(el('div', { class:'ms-row' }, [
+      el('input', { class:'inp inp-sm', value:m.label, placeholder:'למשל: מקדמה בחתימה', 'data-ms':i, 'data-msf':'label', 'aria-label':'תיאור מדרגה' }),
+      el('input', { class:'inp inp-sm inp-pct tnum', type:'number', min:'0', step:'any', value:m.val, 'data-ms':i, 'data-msf':'val', 'aria-label':'סכום או אחוז' }),
+      el('select', { class:'sel inp-sm', style:'width:62px', 'data-ms':i, 'data-msf':'mode', 'aria-label':'סוג מדרגה' }, [
+        el('option', { value:'pct', text:'%', selected: m.mode === 'pct' }),
+        el('option', { value:'amount', text:'₪', selected: m.mode === 'amount' })
+      ]),
+      el('button', { class:'btn-icon danger', 'data-msdel':i, title:'מחק מדרגה', text:'✕' })
+    ]));
+  });
+  renderMilestoneWarn(calc(S.current));
+}
+
+function renderMilestoneWarn(fin) {
+  const w = $('msWarn'), ms = S.current.milestones;
+  if (!ms.length) {
+    w.textContent = 'ללא מדרגות — ההצעה תודפס עם תנאי התשלום שבהערות בלבד.';
+    w.style.color = 'var(--muted)';
+    $('docMilestones').textContent = '';
+    return;
+  }
+  const totalPct = ms.reduce((a, m) => a + (m.mode === 'pct' ? num(m.val) : (fin.grand > 0 ? num(m.val) / fin.grand * 100 : 0)), 0);
+  const sum = ms.reduce((a, m) => a + (m.mode === 'pct' ? fin.grand * num(m.val) / 100 : num(m.val)), 0);
+  if (Math.abs(totalPct - 100) <= 0.5) { w.textContent = `✔ סך המדרגות ${money(sum)} = 100% מההצעה`; w.style.color = 'var(--good-ink)'; }
+  else { w.textContent = `⚠ סך המדרגות ${money(sum)} (${totalPct.toFixed(1)}%) — חסר/עודף ${money(Math.abs(fin.grand - sum))}`; w.style.color = 'var(--crit-ink)'; }
+  renderDocMilestones(fin);
+}
+
+function renderDocMilestones(fin) {
+  const box = $('docMilestones');
+  box.textContent = '';
+  const ms = S.current.milestones;
+  if (!ms.length) return;
+  const rows = ms.map((m, i) => {
+    const amount = m.mode === 'pct' ? r2(fin.grand * num(m.val) / 100) : r2(num(m.val));
+    return el('tr', {}, [
+      el('td', { style:'text-align:center', text:String(i+1) }),
+      el('td', { text:m.label || 'תשלום' }),
+      el('td', { style:'text-align:center', text: m.mode === 'pct' ? `${num(m.val)}%` : '—' }),
+      el('td', { class:'tnum', style:'text-align:left; font-weight:800', text:money(amount) })
+    ]);
+  });
+  box.appendChild(el('h4', { style:'font-size:11pt; font-weight:800; margin-bottom:6px', text:'לוח תשלומים' }));
+  box.appendChild(el('table', { class:'t', style:'width:100%; max-width:430px' }, [
+    el('thead', {}, el('tr', {}, [
+      el('th', { style:'width:32px; text-align:center', text:'#' }),
+      el('th', { text:'שלב' }),
+      el('th', { style:'width:66px; text-align:center', text:'שיעור' }),
+      el('th', { style:'width:104px; text-align:left', text:'סכום (כולל מע"מ)' })
+    ])),
+    el('tbody', {}, rows)
+  ]));
+}
+
+$('msRows').addEventListener('input', (e) => {
+  const t = e.target, i = t.dataset.ms, f = t.dataset.msf;
+  if (i === undefined || !f) return;
+  const m = S.current.milestones[+i];
+  if (!m) return;
+  m[f] = f === 'val' ? Math.max(0, num(t.value)) : t.value;
+  renderMilestoneWarn(calc(S.current));
+  saveState();
+});
+$('msRows').addEventListener('change', (e) => {
+  if (e.target.dataset.msf === 'mode') {
+    const m = S.current.milestones[+e.target.dataset.ms];
+    if (m) { m.mode = e.target.value; renderMilestoneWarn(calc(S.current)); saveState(); }
+  }
+});
+$('msRows').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-msdel]');
+  if (!b) return;
+  S.current.milestones.splice(+b.dataset.msdel, 1);
+  renderMilestones(); saveState();
+});
+</script>
+<script>
+"use strict";
+/* ===================================================================
+   ProQuote CRM v3 — CRM, ניתוח עסקי, מחירון, הגדרות וחיווט
+   =================================================================== */
+
+/* ------------------------------ שמירה וטעינה של הצעות ------------------------------ */
+function saveQuote(silent = false) {
+  const q = S.current;
+  if (!q.clientName.trim()) {
+    if (!silent) { toast('חובה להזין שם לקוח לפני שמירה בתיק'); $('clientName').classList.add('err'); $('clientName').focus(); }
+    return false;
+  }
+  $('clientName').classList.remove('err');
+  q.updatedAt = new Date().toISOString();
+  q.savedAt = new Date().toLocaleString('he-IL');
+  if (q.status === 'sent' && !q.sentAt) q.sentAt = todayISO();
+  if ((q.status === 'approved' || q.status === 'rejected') && !q.decidedAt) q.decidedAt = todayISO();
+
+  const copy = structuredClone(q);
+  const i = S.quotes.findIndex(x => x.id === copy.id || x.quoteNum === copy.quoteNum);
+  if (i > -1) S.quotes[i] = copy; else S.quotes.unshift(copy);
+
+  saveState(true);
+  renderQuickClients();
+  renderCRM();
+  checkReturning();
+  if (!silent) toast(`הצעה #${copy.quoteNum} נשמרה בתיק של ${copy.clientName}`);
+  return true;
+}
+
+function newQuote(seed = {}) {
+  S.current = blankQuote({
+    quoteNum: nextQuoteNum(),
+    status: 'draft',
+    vatRate: clamp(num(S.business.vatRate), 0, 100),
+    validityDays: clamp(Math.round(num(S.settings.defaultValidity)), 0, 365),
+    notes: S.settings.defaultTerms || DEFAULT_TERMS,
+    ...seed
+  });
+  fillBuilderInputs();
+  switchTab('builder');
+  saveState(true);
+}
+
+function loadQuote(id) {
+  const q = S.quotes.find(x => x.id === id);
+  if (!q) return;
+  S.current = structuredClone(q);
+  fillBuilderInputs();
+  switchTab('builder');
+  toast(`נטענה הצעה #${q.quoteNum} — ${q.clientName}`);
+  saveState(true);
+}
+
+function duplicateQuote(id) {
+  const src = id ? S.quotes.find(x => x.id === id) : S.current;
+  if (!src) return;
+  const c = structuredClone(src);
+  c.id = uid('q'); c.quoteNum = nextQuoteNum(); c.status = 'draft';
+  c.quoteDate = todayISO(); c.savedAt = null; c.sentAt = null; c.decidedAt = null;
+  c.createdAt = new Date().toISOString();
+  c.vatRate = clamp(num(S.business.vatRate), 0, 100);
+  S.current = c;
+  fillBuilderInputs();
+  switchTab('builder');
+  toast(`שוכפל להצעה חדשה #${c.quoteNum}`);
+  saveState(true);
+}
+
+async function deleteQuote(id) {
+  const i = S.quotes.findIndex(x => x.id === id);
+  if (i < 0) return;
+  const q = S.quotes[i];
+  if (!await confirmBox('מחיקת הצעה', `למחוק את הצעה #${q.quoteNum} של ${q.clientName}? אפשר לבטל מיד אחרי המחיקה.`, 'מחק')) return;
+  S.quotes.splice(i, 1);
+  saveState(true); renderCRM(); renderQuickClients(); checkReturning();
+  toast('ההצעה נמחקה', { label:'בטל מחיקה', fn: () => { S.quotes.splice(i, 0, q); saveState(true); renderCRM(); renderQuickClients(); } });
+}
+
+function setQuoteStatus(id, st) {
+  const q = S.quotes.find(x => x.id === id);
+  if (!q) return;
+  q.status = st;
+  if (st === 'sent' && !q.sentAt) q.sentAt = todayISO();
+  if ((st === 'approved' || st === 'rejected')) q.decidedAt = todayISO();
+  if (S.current.id === q.id) { S.current.status = st; $('qStatus').value = st; syncBizHeader(); updateExpiryBadge(); }
+  saveState(true); renderCRM();
+  toast(`הסטטוס עודכן ל"${STATUS_META[st].label}"`);
+}
+
+/* ------------------------------ אגרגציית לקוחות ------------------------------ */
+function clientKeyOf(q) {
+  const p = phoneLocal(q.clientPhone);
+  return p.length >= 9 ? 'P' + p : 'N' + (q.clientName || '').trim().toLowerCase();
+}
+
+function aggregateClients() {
+  const map = new Map();
+  S.quotes.forEach(q => {
+    const key = clientKeyOf(q);
+    if (!map.has(key)) map.set(key, { key, name:(q.clientName || 'לקוח ללא שם').trim(), phone:q.clientPhone || '', email:'', address:'', city:'', coords:null,
+      access:{ floor:'', elevator:false, code:'', parking:'' }, internalNotes:'', quotes:[] });
+    const c = map.get(key);
+    if (!c.phone && q.clientPhone) c.phone = q.clientPhone;
+    if (!c.email && q.clientEmail) c.email = q.clientEmail;
+    if (!c.address && q.clientAddress) c.address = q.clientAddress;
+    if (q.internalNotes) c.internalNotes = q.internalNotes;
+    // פרטי שטח נשמרים בין הצעות חוזרות של אותו לקוח — ההצעה העדכנית גוברת
+    const gps = validCoords(q.clientCoords);
+    if (gps) c.coords = gps;
+    if (q.clientCity) c.city = q.clientCity;
+    const ac = q.siteAccess || {};
+    if (ac.floor) c.access.floor = ac.floor;
+    if (ac.code) c.access.code = ac.code;
+    if (ac.parking) c.access.parking = ac.parking;
+    if (ac.elevator) c.access.elevator = true;
+    c.quotes.push({ ...q, fin: calc(q) });
+  });
+  const out = Array.from(map.values());
+  out.forEach(c => {
+    c.quotes.sort((a, b) => (b.quoteDate || '').localeCompare(a.quoteDate || '') || b.quoteNum - a.quoteNum);
+    c.approvedValue = c.quotes.filter(q => q.status === 'approved').reduce((a, q) => a + q.fin.grand, 0);
+    c.approvedProfit = c.quotes.filter(q => q.status === 'approved').reduce((a, q) => a + q.fin.profit, 0);
+    c.openValue = c.quotes.filter(q => statusKey(q) === 'sent').reduce((a, q) => a + q.fin.grand, 0);
+    const decided = c.quotes.filter(q => q.status === 'approved' || q.status === 'rejected').length;
+    c.winRate = decided ? (c.quotes.filter(q => q.status === 'approved').length / decided) * 100 : null;
+    c.lastDate = c.quotes[0]?.quoteDate || '';
+    // הנתון האחרון קובע: הצעה חדשה יותר עם GPS/גישה דורסת ישן
+    const newestGeo = c.quotes.find(q => validCoords(q.clientCoords));
+    if (newestGeo) c.coords = validCoords(newestGeo.clientCoords);
+    if (!c.city) c.city = extractCity(c.address);
+    c.waiting = c.quotes.some(q => statusKey(q) === 'sent');
+    c.navTarget = navTarget({ coords:c.coords, address:c.address });
+  });
+  return out;
+}
+
+/* ------------------------------ מסלול פגישות יומי ------------------------------ */
+const routeSel = new Set();
+let lastCrmList = [];
+const GMAPS_MAX_WAYPOINTS = 9; // מגבלת הקישור הציבורי של Google Maps (יעד + 9 עצירות)
+
+function routeStops() {
+  const all = aggregateClients().filter(c => routeSel.has(c.key) && c.navTarget);
+  // הסדר נקבע לפי סדר הכרטיסים שעל המסך (המיון שבחרת), כדי שמספור התחנות יתאים למה שאתה רואה
+  const order = new Map(lastCrmList.map((c, i) => [c.key, i]));
+  return all.sort((a, b) => (order.has(a.key) ? order.get(a.key) : 1e6) - (order.has(b.key) ? order.get(b.key) : 1e6));
+}
+
+/* קישור מסלול רב-תחנתי: היעד הוא התחנה האחרונה, השאר waypoints לפי הסדר */
+function buildRouteUrl(stops) {
+  if (stops.length < 2) return null;
+  const targets = stops.map(c => c.navTarget);
+  const destination = targets[targets.length - 1];
+  const waypoints = targets.slice(0, -1).slice(0, GMAPS_MAX_WAYPOINTS);
+  return 'https://www.google.com/maps/dir/?api=1' +
+    `&destination=${encodeURIComponent(destination)}` +
+    (waypoints.length ? `&waypoints=${encodeURIComponent(waypoints.join('|'))}` : '') +
+    '&travelmode=driving';
+}
+
+function renderRouteBar() {
+  const bar = $('routeBar');
+  const stops = routeStops();
+  if (!stops.length || activeTab !== 'clients') {
+    bar.classList.remove('on'); bar.textContent = '';
+    document.body.classList.remove('route-open');
+    return;
+  }
+
+  const url = buildRouteUrl(stops);
+  const overflow = Math.max(0, stops.length - (GMAPS_MAX_WAYPOINTS + 1));
+  bar.textContent = '';
+  bar.appendChild(el('div', { class:'row-between', style:'margin-bottom:8px' }, [
+    el('div', {}, [
+      el('strong', { style:'font-size:14px', text:`🚗 מסלול יומי — ${stops.length} תחנות` }),
+      el('div', { class:'hint', text: stops.length < 2
+        ? 'סמן לפחות 2 לקוחות כדי לפתוח מסלול משולב'
+        : (overflow ? `Google Maps תומך ב-${GMAPS_MAX_WAYPOINTS + 1} תחנות בקישור אחד — ${overflow} האחרונות לא ייכללו במסלול המשולב` : 'המסלול ייפתח בניווט לפי הסדר שלמטה') })
+    ]),
+    el('div', { style:'display:flex; gap:7px; flex-wrap:wrap' }, [
+      url
+        ? el('a', { class:'btn btn-primary btn-sm', href:url, target:'_blank', rel:'noopener',
+            text:`🚗 פתח מסלול משולב ב-Google Maps (${Math.min(stops.length, GMAPS_MAX_WAYPOINTS + 1)} תחנות)` })
+        : el('button', { class:'btn btn-primary btn-sm', disabled:'disabled', text:'🚗 פתח מסלול משולב' }),
+      el('button', { class:'btn btn-ghost btn-sm', 'data-routeclear':'1', text:'נקה' })
+    ])
+  ]));
+
+  // Waze מנווט לתחנה אחת בכל פעם — לכן רשימה ממוספרת עם כפתור לכל תחנה
+  stops.forEach((c, i) => {
+    const nav = buildNavLinks(c.address, c.coords);
+    const a = c.access || {};
+    const extra = [a.floor ? 'קומה ' + a.floor : '', a.code ? 'קוד ' + a.code : '', a.parking || ''].filter(Boolean).join(' · ');
+    bar.appendChild(el('div', { class:'stop' }, [
+      el('div', { style:'display:flex; gap:9px; align-items:center; min-width:0' }, [
+        el('span', { class:'stop-n', text:String(i + 1) }),
+        el('div', { style:'min-width:0' }, [
+          el('div', { style:'font-weight:800; font-size:13px', text:c.name }),
+          el('div', { class:'mini', text:[c.address || 'נקודת GPS', extra].filter(Boolean).join(' · ') })
+        ])
+      ]),
+      el('div', { style:'display:flex; gap:6px; align-items:center' }, [
+        nav ? el('a', { class:'navchip waze', href:nav.waze, target:'_blank', rel:'noopener', text:`🚗 Waze #${i + 1}` }) : null,
+        nav ? el('a', { class:'navchip', href:nav.gmaps, target:'_blank', rel:'noopener', text:'🗺️' }) : null,
+        el('button', { class:'btn-icon danger', 'data-routedel':c.key, title:'הסר מהמסלול', text:'✕' })
+      ])
+    ]));
+  });
+  bar.classList.add('on');
+  document.body.classList.add('route-open');
+}
+
+$('routeBar').addEventListener('click', (e) => {
+  const del = e.target.closest('[data-routedel]'), clr = e.target.closest('[data-routeclear]');
+  if (del) { routeSel.delete(del.dataset.routedel); renderCRM(); }
+  else if (clr) { routeSel.clear(); renderCRM(); }
+});
+$('routeClear').addEventListener('click', () => { routeSel.clear(); renderCRM(); toast('הבחירה נוקתה'); });
+$('routeSelectWaiting').addEventListener('click', () => {
+  const pick = lastCrmList.filter(c => c.waiting && c.navTarget);
+  if (!pick.length) { toast('אין לקוחות ממתינים עם כתובת בסינון הנוכחי'); return; }
+  pick.forEach(c => routeSel.add(c.key));
+  renderCRM();
+  toast(`נבחרו ${pick.length} לקוחות ממתינים למסלול`);
+});
+
+/* ------------------------------ רינדור CRM ------------------------------ */
+let crmSearchTimer = null;
+function renderCRM() {
+  const clients = aggregateClients();
+  $('cntClients').textContent = clients.length;
+  $('kClients').textContent = clients.length;
+  $('kQuotes').textContent = S.quotes.length;
+
+  let pipeline = 0, approved = 0, approvedCount = 0, rejectedCount = 0, marginSum = 0, expiredCount = 0;
+  S.quotes.forEach(q => {
+    const f = calc(q), k = statusKey(q);
+    if (q.status === 'approved') { approved += f.grand; approvedCount++; marginSum += f.margin; }
+    else if (q.status === 'rejected') rejectedCount++;
+    if (k === 'sent') pipeline += f.grand;
+    if (k === 'expired') expiredCount++;
+  });
+  const decided = approvedCount + rejectedCount;
+  $('kPipeline').textContent = money(pipeline);
+  $('kApproved').textContent = money(approved);
+  $('kWin').textContent = decided ? pct((approvedCount / decided) * 100) : '—';
+  $('kMargin').textContent = approvedCount ? pct(marginSum / approvedCount) : '—';
+  $('kClientsSub').textContent = clients.length ? `${clients.filter(c => c.quotes.length > 1).length} לקוחות חוזרים` : 'עדיין אין לקוחות';
+  $('kQuotesSub').textContent = expiredCount ? `${expiredCount} פג תוקף` : 'הכל בתוקף';
+  $('kPipelineSub').textContent = `${S.quotes.filter(q => statusKey(q) === 'sent').length} הצעות ממתינות`;
+  $('kApprovedSub').textContent = `${approvedCount} עסקאות שנסגרו`;
+  $('kWinSub').textContent = decided ? `${approvedCount} מתוך ${decided} הצעות שהוכרעו` : 'אין נתון מספיק';
+
+  renderFollowUps();
+
+  renderCityFilter(clients);
+  const term = ($('crmSearch').value || '').trim().toLowerCase();
+  const stf = $('crmStatus').value;
+  const sort = $('crmSort').value;
+  const cityF = $('crmCity').value;
+
+  let list = clients.filter(c => {
+    const okStatus = stf === 'ALL' || c.quotes.some(q => statusKey(q) === stf);
+    if (!okStatus) return false;
+    if (cityF !== 'ALL' && (c.city || 'ללא עיר') !== cityF) return false;
+    if (!term) return true;
+    const hay = [c.name, c.phone, phoneLocal(c.phone), c.address, c.email, c.internalNotes].join(' ').toLowerCase();
+    if (hay.includes(term)) return true;
+    return c.quotes.some(q => (q.projectTitle || '').toLowerCase().includes(term) || String(q.quoteNum).includes(term));
+  });
+
+  list.sort((a, b) => {
+    if (sort === 'value') return b.approvedValue - a.approvedValue;
+    if (sort === 'quotes') return b.quotes.length - a.quotes.length;
+    if (sort === 'name') return a.name.localeCompare(b.name, 'he');
+    return (b.lastDate || '').localeCompare(a.lastDate || '');
+  });
+
+  const box = $('crmList');
+  box.textContent = '';
+  if (!list.length) {
+    box.appendChild(el('div', { class:'card empty' }, [
+      el('div', { class:'big', text:'📂' }),
+      el('h3', { text: S.quotes.length ? 'אין לקוחות התואמים לסינון' : 'עדיין לא שמרת הצעות' }),
+      el('p', { class:'hint', text:'כל הצעה שתשמור תיצור אוטומטית כרטיס לקוח עם היסטוריה, רווחיות ומעקב.' })
+    ]));
+    return;
+  }
+  list.forEach(c => box.appendChild(clientCard(c)));
+  lastCrmList = list;
+  renderRouteBar();
+}
+
+/* סינון לפי עיר — נבנה דינמית מהכתובות עם ספירת לקוחות */
+function renderCityFilter(clients) {
+  const sel = $('crmCity'), prev = sel.value || 'ALL';
+  const counts = new Map();
+  clients.forEach(c => {
+    const key = c.city || 'ללא עיר';
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+  const cities = Array.from(counts.keys()).sort((a, b) => a.localeCompare(b, 'he'));
+  sel.textContent = '';
+  sel.appendChild(el('option', { value:'ALL', text:`כל הערים (${clients.length})` }));
+  cities.forEach(c => sel.appendChild(el('option', { value:c, text:`${c} (${counts.get(c)})` })));
+  sel.value = cities.includes(prev) || prev === 'ALL' ? prev : 'ALL';
+}
+
+function accessTags(c) {
+  const a = c.access || {}, tags = [];
+  if (a.floor) tags.push('🏢 קומה ' + a.floor);
+  if (a.floor || a.elevator) tags.push(a.elevator ? '🛗 יש מעלית' : '🚶 ללא מעלית');
+  if (a.code) tags.push('🔑 קוד ' + a.code);
+  if (a.parking) tags.push('🅿️ ' + a.parking);
+  if (c.coords) tags.push('📍 GPS מדויק');
+  if (!tags.length) return null;
+  return el('div', { style:'display:flex; flex-wrap:wrap; gap:6px; margin-top:7px' },
+    tags.map(t => el('span', { class:'tagpill', text:t })));
+}
+
+function clientCard(c) {
+  const wa = phoneIntl(c.phone);
+  const nav = buildNavLinks(c.address, c.coords);
+  const head = el('div', { class:'client-hd' }, [
+    el('div', { style:'flex:1 1 260px' }, [
+      el('div', { style:'display:flex; align-items:center; gap:9px; flex-wrap:wrap' }, [
+        el('h3', { text:'👤 ' + c.name }),
+        el('span', { class:'badge b-brand', text:`${c.quotes.length} הצעות` }),
+        c.approvedValue > 0 ? el('span', { class:'badge b-good', text:`✅ ${money(c.approvedValue)} עבודות` }) : null,
+        c.openValue > 0 ? el('span', { class:'badge b-warn', text:`⏳ ${money(c.openValue)} בהמתנה` }) : null,
+        c.winRate !== null ? el('span', { class:'badge b-mut', text:`🎯 סגירה ${pct(c.winRate)}` }) : null
+      ]),
+      el('div', { class:'client-meta' }, [
+        el('span', { text:'📞 ' + (c.phone ? phonePretty(c.phone) : 'לא הוזן') }),
+        el('span', { text:'📍 ' + (c.address || 'לא הוזנה') }),
+        c.email ? el('span', { text:'✉️ ' + c.email }) : null,
+        el('span', { text:'🕒 פעילות אחרונה: ' + dateHe(c.lastDate) }),
+        c.approvedProfit > 0 ? el('span', { style:'color:var(--good-ink)', text:'💰 רווח מצטבר: ' + money(c.approvedProfit) }) : null
+      ]),
+      accessTags(c),
+      c.internalNotes ? el('div', { class:'note-int', text:'🔒 הערה פנימית: ' + c.internalNotes }) : null
+    ]),
+    el('div', { style:'display:flex; gap:7px; flex-wrap:wrap; align-items:flex-start' }, [
+      nav ? el('a', { class:'btn btn-ghost btn-sm navchip waze', href:nav.waze, target:'_blank', rel:'noopener',
+        title: nav.hasCoords ? 'ניווט לנקודת GPS מדויקת' : 'ניווט לפי כתובת', text:'🚗 Waze' }) : null,
+      nav ? el('a', { class:'btn btn-ghost btn-sm', href:nav.gmaps, target:'_blank', rel:'noopener', text:'🗺️ Maps' }) : null,
+      wa ? el('a', { class:'btn btn-good btn-sm', href:'https://wa.me/' + wa, target:'_blank', rel:'noopener', text:'💬 וואטסאפ' }) : null,
+      c.phone ? el('a', { class:'btn btn-ghost btn-sm', href:'tel:' + phoneLocal(c.phone), text:'📞 התקשר' }) : null,
+      el('button', { class:'btn btn-dark btn-sm', 'data-newfor':c.key, text:'+ הצעה חדשה ללקוח' }),
+      c.navTarget ? el('label', { class:'switch', style:'width:100%; justify-content:flex-end; color:var(--ink-2)' }, [
+        el('input', { type:'checkbox', 'data-route':c.key, checked:routeSel.has(c.key) }),
+        el('span', { text:'בחירה למסלול יומי' })
+      ]) : null
+    ])
+  ]);
+
+  const rows = c.quotes.map(q => {
+    const f = q.fin;
+    return el('div', { class:'qrow' }, [
+      el('div', { style:'flex:1 1 230px' }, [
+        el('div', { style:'display:flex; align-items:center; gap:8px; flex-wrap:wrap' }, [
+          el('strong', { style:'font-size:13.5px', text:`#${q.quoteNum} — ${q.projectTitle || 'ללא שם פרויקט'}` }),
+          statusBadge(q)
+        ]),
+        el('div', { class:'mini', style:'margin-top:3px' }, [
+          el('span', { text:`${dateHe(q.quoteDate)} · ${q.items.length} סעיפים · מע"מ ${f.vatRate}%` }),
+          el('span', { style:`color:${marginCssColor(f.margin)}; font-weight:800`, text:` · רווח ${money(f.profit)} (${pct(f.margin)})` })
+        ])
+      ]),
+      el('div', { style:'text-align:left' }, [
+        el('div', { class:'mini', text:'סה"כ כולל מע"מ' }),
+        el('div', { class:'tnum', style:'font-size:15px; font-weight:900; color:var(--brand-2)', text:money(f.grand) })
+      ]),
+      el('div', { style:'display:flex; gap:5px; align-items:center; flex-wrap:wrap' }, [
+        el('select', { class:'sel inp-sm', style:'width:auto', 'data-st':q.id, 'aria-label':'שינוי סטטוס' },
+          ['draft','sent','approved','rejected'].map(k =>
+            el('option', { value:k, text:`${STATUS_META[k].icon} ${STATUS_META[k].label}`, selected:q.status === k }))),
+        el('button', { class:'btn btn-primary btn-sm', 'data-open':q.id, text:'✏️ ערוך' }),
+        el('button', { class:'btn btn-ghost btn-sm', 'data-dup':q.id, text:'⧉ שכפל' }),
+        el('button', { class:'btn-icon danger', 'data-del':q.id, title:'מחק הצעה', text:'🗑' })
+      ])
+    ]);
+  });
+
+  return el('div', { class:'client' }, [
+    head,
+    el('div', { style:'padding:13px' }, [
+      el('div', { class:'mini', style:'font-weight:800; margin-bottom:7px', text:'היסטוריית הצעות:' }),
+      ...rows
+    ])
+  ]);
+}
+
+function renderFollowUps() {
+  const box = $('followUps'), days = Math.max(1, Math.round(num(S.settings.followUpDays) || 7));
+  const items = [];
+  S.quotes.forEach(q => {
+    const k = statusKey(q);
+    if (k === 'expired') items.push({ q, type:'expired', text:`פג תוקף ב-${dateHe(expiryISO(q))} ולא התקבלה תשובה` });
+    else if (k === 'sent') {
+      const age = daysBetween(q.sentAt || q.quoteDate, todayISO());
+      if (age >= days) items.push({ q, type:'stale', text:`נשלחה לפני ${age} ימים ללא תשובה` });
+    } else if (q.status === 'draft' && daysBetween(q.quoteDate, todayISO()) >= days) {
+      items.push({ q, type:'draft', text:`טיוטה פתוחה מ-${dateHe(q.quoteDate)} שלא נשלחה` });
+    }
+  });
+  items.sort((a, b) => (a.q.quoteDate || '').localeCompare(b.q.quoteDate || ''));
+  $('followBox').hidden = items.length === 0;
+  box.textContent = '';
+  items.slice(0, 12).forEach(({ q, type, text }) => {
+    const f = calc(q), wa = phoneIntl(q.clientPhone);
+    box.appendChild(el('div', { class:'qrow' }, [
+      el('div', { style:'flex:1 1 240px' }, [
+        el('div', { style:'display:flex; gap:8px; align-items:center; flex-wrap:wrap' }, [
+          el('span', { class:'badge ' + (type === 'expired' ? 'b-crit' : type === 'stale' ? 'b-warn' : 'b-mut'),
+            text: type === 'expired' ? '⏰ פג תוקף' : type === 'stale' ? '📞 דרוש מעקב' : '📝 טיוטה' }),
+          el('strong', { style:'font-size:13px', text:`${q.clientName} — #${q.quoteNum}` })
+        ]),
+        el('div', { class:'mini', style:'margin-top:3px', text: `${text} · ${money(f.grand)}` })
+      ]),
+      el('div', { style:'display:flex; gap:6px; flex-wrap:wrap' }, [
+        wa ? el('a', { class:'btn btn-good btn-sm', href:`https://wa.me/${wa}?text=${encodeURIComponent(followUpMsg(q, f))}`, target:'_blank', rel:'noopener', text:'💬 תזכורת' }) : null,
+        el('button', { class:'btn btn-ghost btn-sm', 'data-open':q.id, text:'פתח' })
+      ])
+    ]));
+  });
+}
+
+function followUpMsg(q, f) {
+  return `שלום ${q.clientName},\nמתזכר לגבי הצעת המחיר #${q.quoteNum} עבור ${q.projectTitle || 'העבודה'} בסך ${money(f.grand)} כולל מע"מ.\nאשמח לדעת אם יש שאלות או שנתקדם לתיאום מועד.\n\nבברכה,\n${S.business.name || ''}`;
+}
+
+$('crmList').addEventListener('click', (e) => {
+  const o = e.target.closest('[data-open]'), d = e.target.closest('[data-dup]'),
+        x = e.target.closest('[data-del]'), n = e.target.closest('[data-newfor]');
+  if (o) loadQuote(o.dataset.open);
+  else if (d) duplicateQuote(d.dataset.dup);
+  else if (x) deleteQuote(x.dataset.del);
+  else if (n) {
+    const c = aggregateClients().find(c => c.key === n.dataset.newfor);
+    if (c) {
+      newQuote({ clientName:c.name, clientPhone:c.phone, clientEmail:c.email, clientAddress:c.address,
+        clientCity:c.city, clientCoords:c.coords ? { ...c.coords } : null,
+        siteAccess:{ ...c.access }, internalNotes:c.internalNotes });
+      toast(`הצעה חדשה עבור ${c.name} — כולל מיקום ופרטי גישה`);
+    }
+  }
+});
+$('crmList').addEventListener('change', (e) => {
+  if (e.target.dataset.st) { setQuoteStatus(e.target.dataset.st, e.target.value); return; }
+  if (e.target.dataset.route !== undefined) {
+    const k = e.target.dataset.route;
+    if (e.target.checked) routeSel.add(k); else routeSel.delete(k);
+    renderRouteBar();
+  }
+});
+$('followUps').addEventListener('click', (e) => {
+  const o = e.target.closest('[data-open]');
+  if (o) loadQuote(o.dataset.open);
+});
+
+/* ------------------------------ זיהוי לקוח חוזר ------------------------------ */
+function matchesForCurrent() {
+  const name = ($('clientName').value || '').trim().toLowerCase();
+  const ph = phoneLocal($('clientPhone').value);
+  if (name.length < 2 && ph.length < 9) return [];
+  return S.quotes.filter(q => {
+    if (q.id === S.current.id) return false;
+    const qp = phoneLocal(q.clientPhone);
+    return (ph.length >= 9 && qp === ph) || (name.length >= 3 && (q.clientName || '').trim().toLowerCase() === name);
+  }).sort((a, b) => (b.quoteDate || '').localeCompare(a.quoteDate || ''));
+}
+
+function checkReturning() {
+  const m = matchesForCurrent(), banner = $('rcBanner');
+  if (!m.length) { banner.hidden = true; return; }
+  const last = m[0], f = calc(last);
+  const approved = m.filter(q => q.status === 'approved');
+  const sum = approved.reduce((a, q) => a + calc(q).grand, 0);
+  $('rcText').textContent =
+    `ל"${last.clientName}" קיימות ${m.length} הצעות קודמות. האחרונה: #${last.quoteNum} מ-${dateHe(last.quoteDate)} (${money(f.grand)}, ${STATUS_META[statusKey(last)].label})` +
+    (approved.length ? ` · ביצע אצלך ${approved.length} עבודות בסך ${money(sum)}.` : '');
+  banner.hidden = false;
+  banner._last = last.id;
+}
+$('rcHistory').onclick = () => { $('crmSearch').value = ($('clientName').value || '').trim(); switchTab('clients'); };
+$('rcFill').onclick = () => {
+  const id = $('rcBanner')._last, src = S.quotes.find(q => q.id === id);
+  if (!src) return;
+  const q = S.current;
+  q.clientName = src.clientName; q.clientPhone = src.clientPhone; q.clientEmail = src.clientEmail;
+  q.clientAddress = src.clientAddress; q.internalNotes = src.internalNotes;
+  q.clientCity = src.clientCity || extractCity(src.clientAddress);
+  q.clientCoords = validCoords(src.clientCoords);
+  q.siteAccess = { ...src.siteAccess };
+  fillBuilderInputs(); saveState();
+  toast('פרטי הלקוח הועתקו מההצעה הקודמת');
+};
+
+function renderQuickClients() {
+  const sel = $('quickClient'), clients = aggregateClients()
+    .sort((a, b) => (b.lastDate || '').localeCompare(a.lastDate || ''));
+  sel.textContent = '';
+  sel.appendChild(el('option', { value:'', text:'— בחר לקוח שמור למילוי אוטומטי —' }));
+  clients.forEach(c => sel.appendChild(el('option', { value:c.key,
+    text:`${c.name}${c.phone ? ' (' + phonePretty(c.phone) + ')' : ''} — ${c.quotes.length} הצעות` })));
+}
+$('quickClient').addEventListener('change', (e) => {
+  const c = aggregateClients().find(x => x.key === e.target.value);
+  if (!c) return;
+  const q = S.current;
+  q.clientName = c.name; q.clientPhone = c.phone; q.clientEmail = c.email;
+  q.clientAddress = c.address; q.internalNotes = c.internalNotes;
+  q.clientCity = c.city; q.clientCoords = c.coords ? { ...c.coords } : null; q.siteAccess = { ...c.access };
+  fillBuilderInputs(); saveState();
+  toast(`פרטי "${c.name}" נטענו`);
+  e.target.value = '';
+});
+
+/* ------------------------------ גרפים (SVG טהור) ------------------------------ */
+const VIZ = {
+  seq: ['var(--seq-5)','var(--seq-4)','var(--seq-3)','var(--seq-2)','var(--seq-1)'],
+  brand: 'var(--brand)',
+  status: { approved:'var(--good)', sent:'var(--warn)', rejected:'var(--crit)', expired:'var(--serious)', draft:'var(--muted)' }
+};
+const tip = $('vizTip');
+function bindTips(root) {
+  $$('[data-tip]', root).forEach(n => {
+    n.addEventListener('mousemove', (e) => {
+      tip.textContent = n.dataset.tip;
+      tip.classList.add('on');
+      const pad = 14;
+      tip.style.left = Math.min(window.innerWidth - tip.offsetWidth - 8, Math.max(8, e.clientX - tip.offsetWidth / 2)) + 'px';
+      tip.style.top = Math.max(8, e.clientY - tip.offsetHeight - pad) + 'px';
+    });
+    n.addEventListener('mouseleave', () => tip.classList.remove('on'));
+  });
+}
+function roundedVBar(x, w, y0, y1, r = 4) {
+  const h = y0 - y1, rr = Math.min(r, h / 2, w / 2);
+  if (h <= 0.5) return `M${x},${y0} L${x + w},${y0} L${x + w},${y0 - 0.5} L${x},${y0 - 0.5} Z`;
+  return `M${x},${y0} L${x},${y1 + rr} Q${x},${y1} ${x + rr},${y1} L${x + w - rr},${y1} Q${x + w},${y1} ${x + w},${y1 + rr} L${x + w},${y0} Z`;
+}
+function roundedHBarRTL(xRight, xEnd, y, h, r = 4) {
+  const w = xRight - xEnd, rr = Math.min(r, w / 2, h / 2);
+  if (w <= 0.5) return `M${xRight},${y} L${xRight},${y + h} L${xRight - 0.5},${y + h} L${xRight - 0.5},${y} Z`;
+  return `M${xRight},${y} L${xEnd + rr},${y} Q${xEnd},${y} ${xEnd},${y + rr} L${xEnd},${y + h - rr} Q${xEnd},${y + h} ${xEnd + rr},${y + h} L${xRight},${y + h} Z`;
+}
+
+/* גרף עמודות אנכי — סדרה אחת (ללא מקרא, כפי שנדרש לסדרה בודדת) */
+function vbarChart(host, rows, fmt) {
+  if (!rows.length || rows.every(r => !r.value)) { host.innerHTML = emptyViz('אין נתונים בטווח הנבחר'); return; }
+  const W = 560, H = 230, mL = 8, mR = 8, mT = 22, mB = 34;
+  const max = Math.max(...rows.map(r => r.value)) || 1;
+  const nice = niceMax(max);
+  const plotW = W - mL - mR, plotH = H - mT - mB;
+  const bw = Math.min(46, plotW / rows.length * 0.62);
+  const step = plotW / rows.length;
+  let g = '';
+  for (let i = 0; i <= 4; i++) {
+    const y = mT + plotH * (i / 4);
+    g += `<line class="gl" x1="${mL}" y1="${y}" x2="${W - mR}" y2="${y}" />`;
+    g += `<text class="ax" x="${W - mR}" y="${y - 4}" text-anchor="end">${esc(shortMoney(nice * (1 - i / 4)))}</text>`;
+  }
+  // RTL: החודש האחרון בצד שמאל, הראשון בימין
+  rows.forEach((r, i) => {
+    const cx = W - mR - step * (i + 0.5);
+    const x = cx - bw / 2;
+    const y1 = mT + plotH * (1 - r.value / nice);
+    g += `<path class="bar" data-tip="${esc(r.label + ' · ' + fmt(r.value) + (r.sub ? ' · ' + r.sub : ''))}" d="${roundedVBar(x, bw, mT + plotH, y1)}" fill="${VIZ.brand}" />`;
+    if (r.value > 0 && (rows.length <= 8 || i % 2 === 0 || r.value === max)) {
+      g += `<text class="vlabel" x="${cx}" y="${y1 - 6}" text-anchor="middle">${esc(shortMoney(r.value))}</text>`;
+    }
+    g += `<text class="ax" x="${cx}" y="${H - mB + 15}" text-anchor="middle">${esc(r.label)}</text>`;
+  });
+  g += `<line class="bl" x1="${mL}" y1="${mT + plotH}" x2="${W - mR}" y2="${mT + plotH}" />`;
+  host.innerHTML = `<svg class="viz" viewBox="0 0 ${W} ${H}" role="img" aria-label="גרף עמודות">${g}</svg>`;
+  bindTips(host);
+}
+
+/* גרף עמודות אופקי — עם תוויות ישירות (חובה כשניגודיות הצבע נמוכה) */
+function hbarChart(host, rows, fmt, opts = {}) {
+  if (!rows.length || rows.every(r => !r.value)) { host.innerHTML = emptyViz(opts.emptyText || 'אין נתונים להצגה'); return; }
+  const W = 560, rowH = 30, mT = 6, labelW = 150, valW = 92;
+  const H = mT + rows.length * rowH + 6;
+  const max = Math.max(...rows.map(r => Math.abs(r.value))) || 1;
+  const xRight = W - labelW, xMin = valW;
+  let g = '';
+  rows.forEach((r, i) => {
+    const y = mT + i * rowH + 5, h = rowH - 14;
+    const w = (Math.abs(r.value) / max) * (xRight - xMin);
+    const xEnd = xRight - w;
+    g += `<text class="ax" x="${W - 4}" y="${y + h / 2 + 4}" text-anchor="end" style="font-size:11.5px; fill:var(--ink-2); font-weight:600">${esc(r.label)}</text>`;
+    g += `<path class="bar" data-tip="${esc(r.label + ' · ' + fmt(r.value) + (r.sub ? ' · ' + r.sub : ''))}" d="${roundedHBarRTL(xRight, xEnd, y, h)}" fill="${r.color || VIZ.brand}" />`;
+    g += `<text class="vlabel" x="${xEnd - 7}" y="${y + h / 2 + 4}" text-anchor="end">${esc(fmt(r.value))}</text>`;
+  });
+  host.innerHTML = `<svg class="viz" viewBox="0 0 ${W} ${H}" role="img" aria-label="גרף אופקי">${g}</svg>`;
+  bindTips(host);
+}
+function emptyViz(txt) {
+  return `<div class="empty" style="padding:34px 10px"><div class="big">📭</div><p class="hint">${esc(txt)}</p></div>`;
+}
+function niceMax(v) {
+  if (v <= 0) return 1;
+  const mag = Math.pow(10, Math.floor(Math.log10(v)));
+  return Math.ceil(v / (mag / 2)) * (mag / 2);
+}
+function shortMoney(v) {
+  const n = Math.round(num(v));
+  if (Math.abs(n) >= 1000000) return '₪' + (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (Math.abs(n) >= 1000) return '₪' + (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1).replace(/\.0$/, '') + 'K';
+  return '₪' + n;
+}
+function dataTable(host, head, rows) {
+  host.innerHTML = `<table class="dtable"><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r => `<tr>${r.map(c => `<td class="tnum">${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+/* ------------------------------ ניתוח עסקי ------------------------------ */
+let dashTableMode = false;
+function renderDashboard() {
+  const range = +$('dashRange').value;
+  const from = range ? addDays(todayISO(), -range * 30) : '0000-01-01';
+  const inRange = (q) => (q.quoteDate || '') >= from;
+  const qs = S.quotes.filter(inRange);
+  const appr = qs.filter(q => q.status === 'approved');
+
+  const rev = appr.reduce((a, q) => a + calc(q).beforeVat, 0);
+  const cost = appr.reduce((a, q) => a + calc(q).cost, 0);
+  const profit = rev - cost;
+  const avg = appr.length ? appr.reduce((a, q) => a + calc(q).grand, 0) / appr.length : 0;
+  $('dRev').textContent = money(rev);
+  $('dCost').textContent = money(cost);
+  $('dProfit').textContent = money(profit);
+  $('dAvg').textContent = money(avg);
+  $('dRevSub').textContent = `${appr.length} עסקאות מאושרות`;
+  $('dProfitSub').textContent = rev > 0 ? `רווחיות משוקללת ${pct(profit / rev * 100)}` : '—';
+  $('dAvgSub').textContent = 'כולל מע"מ, בעסקאות שאושרו';
+
+  // 1) הכנסות לפי חודש
+  const months = [];
+  const monthsCount = range || 12;
+  const base = new Date();
+  for (let i = monthsCount - 1; i >= 0; i--) {
+    const d = new Date(base.getFullYear(), base.getMonth() - i, 1);
+    months.push({ key: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,
+      label: MONTHS_HE[d.getMonth()] + (monthsCount > 7 ? '' : ' ' + String(d.getFullYear()).slice(2)), value:0, cnt:0 });
+  }
+  const mIdx = new Map(months.map((m, i) => [m.key, i]));
+  appr.forEach(q => {
+    const k = (q.quoteDate || '').slice(0, 7);
+    if (mIdx.has(k)) { const m = months[mIdx.get(k)]; m.value += calc(q).beforeVat; m.cnt++; }
+  });
+  months.forEach(m => m.sub = `${m.cnt} עסקאות`);
+
+  // 2) פילוח סטטוס
+  const stats = ['approved','sent','expired','rejected','draft'].map(k => {
+    const items = qs.filter(q => statusKey(q) === k);
+    return { label:`${STATUS_META[k].icon} ${STATUS_META[k].label}`, value: items.reduce((a, q) => a + calc(q).grand, 0),
+      color: VIZ.status[k], sub:`${items.length} הצעות`, cnt:items.length };
+  }).filter(r => r.cnt > 0);
+
+  // 3) קטגוריות מובילות ברווח
+  const catMap = new Map();
+  appr.forEach(q => {
+    const f = calc(q);
+    q.items.forEach((it, i) => {
+      const key = it.category || 'כללי';
+      const cur = catMap.get(key) || { profit:0, rev:0 };
+      cur.profit += f.lines[i].profit; cur.rev += f.lines[i].total;
+      catMap.set(key, cur);
+    });
+  });
+  let cats = Array.from(catMap, ([label, v]) => ({ label, value:v.profit, rev:v.rev }))
+    .sort((a, b) => b.value - a.value);
+  if (cats.length > 5) {
+    const rest = cats.slice(5);
+    cats = cats.slice(0, 5).concat([{ label:'אחר', value:rest.reduce((a, r) => a + r.value, 0), rev:rest.reduce((a, r) => a + r.rev, 0) }]);
+  }
+  cats.forEach((c, i) => { c.color = VIZ.seq[Math.min(i, VIZ.seq.length - 1)]; c.sub = `הכנסה ${money(c.rev)}`; });
+
+  // 4) לקוחות מובילים
+  const clients = aggregateClients()
+    .map(c => ({ label:c.name.length > 18 ? c.name.slice(0, 17) + '…' : c.name, value:c.approvedValue, sub:`${c.quotes.length} הצעות`, color:VIZ.seq[2] }))
+    .filter(c => c.value > 0).sort((a, b) => b.value - a.value).slice(0, 6);
+
+  if (dashTableMode) {
+    dataTable($('tableMonthly'), ['חודש','הכנסה','עסקאות'], months.map(m => [m.label, money(m.value), m.cnt]));
+    dataTable($('tableStatus'), ['סטטוס','שווי','הצעות'], stats.map(s => [s.label, money(s.value), s.cnt]));
+    dataTable($('tableCats'), ['קטגוריה','רווח','הכנסה'], cats.map(c => [c.label, money(c.value), money(c.rev)]));
+    dataTable($('tableClients'), ['לקוח','מאושר','הצעות'], clients.map(c => [c.label, money(c.value), c.sub]));
+  } else {
+    vbarChart($('chartMonthly'), months, money);
+    hbarChart($('chartStatus'), stats, money, { emptyText:'אין הצעות בטווח' });
+    hbarChart($('chartCats'), cats, money, { emptyText:'אין עדיין עסקאות מאושרות' });
+    hbarChart($('chartClients'), clients, money, { emptyText:'אין עדיין עסקאות מאושרות' });
+  }
+  ['Monthly','Status','Cats','Clients'].forEach(k => {
+    $('chart' + k).hidden = dashTableMode;
+    $('table' + k).hidden = !dashTableMode;
+  });
+}
+$('dashRange').addEventListener('change', renderDashboard);
+$('dashTableBtn').addEventListener('click', () => {
+  dashTableMode = !dashTableMode;
+  $('dashTableBtn').textContent = dashTableMode ? '📊 הצג כגרפים' : '🔢 הצג כטבלה';
+  renderDashboard();
+});
+
+/* ------------------------------ מחירון ------------------------------ */
+function renderCatalog() {
+  const term = ($('catalogSearch').value || '').trim().toLowerCase();
+  const tb = $('catalogRows');
+  tb.textContent = '';
+  const list = S.catalog.filter(c => !term || (c.desc + ' ' + c.category).toLowerCase().includes(term));
+  $('catalogEmpty').hidden = list.length > 0;
+
+  list.forEach(c => {
+    const prof = r2(c.price - c.cost), marg = c.price > 0 ? (prof / c.price) * 100 : 0;
+    const f = (field, opts = {}) => el('input', {
+      class:'inp inp-sm' + (opts.cls ? ' ' + opts.cls : ''), type:opts.type || 'text',
+      step:opts.type === 'number' ? 'any' : null, min:opts.type === 'number' ? '0' : null,
+      value:c[field], 'data-cid':c.id, 'data-cf':field, 'aria-label':field, style:opts.style || ''
+    });
+    tb.appendChild(el('tr', {}, [
+      el('td', {}, f('category', { style:'font-weight:700; font-size:12px' })),
+      el('td', {}, f('desc')),
+      el('td', {}, f('unit', { style:'text-align:center' })),
+      el('td', {}, f('price', { type:'number', style:'text-align:center; font-weight:800; color:var(--brand-2)' })),
+      el('td', { class:'col-cost' }, f('cost', { type:'number', style:'text-align:center; font-weight:700; color:var(--crit-ink)' })),
+      el('td', { class:'tnum', style:'text-align:center; font-weight:800; color:var(--good-ink)', text:money2(prof) }),
+      el('td', { class:'tnum', style:`text-align:center; font-weight:800; color:${marginCssColor(marg)}`, text:pct(marg) }),
+      el('td', { class:'tnum mini', style:'text-align:center', text:String(c.usage || 0) }),
+      el('td', { style:'text-align:center' }, [
+        el('button', { class:'btn-icon', 'data-cdup':c.id, title:'שכפל סעיף', text:'⧉' }),
+        el('button', { class:'btn-icon danger', 'data-cdel':c.id, title:'מחק סעיף', text:'✕' })
+      ])
+    ]));
+  });
+  renderCatFilter();
+  renderCatPicker();
+}
+
+$('catalogRows').addEventListener('input', (e) => {
+  const t = e.target, id = t.dataset.cid, f = t.dataset.cf;
+  if (!id || !f) return;
+  const c = S.catalog.find(x => x.id === id);
+  if (!c) return;
+  c[f] = (f === 'price' || f === 'cost') ? Math.max(0, num(t.value)) : t.value;
+  const tr = t.closest('tr');
+  const prof = r2(c.price - c.cost), marg = c.price > 0 ? (prof / c.price) * 100 : 0;
+  tr.children[5].textContent = money2(prof);
+  tr.children[6].textContent = pct(marg);
+  tr.children[6].style.color = marginCssColor(marg);
+  saveState();
+});
+$('catalogRows').addEventListener('click', async (e) => {
+  const d = e.target.closest('[data-cdel]'), u = e.target.closest('[data-cdup]');
+  if (d) {
+    const i = S.catalog.findIndex(c => c.id === d.dataset.cdel);
+    if (i < 0) return;
+    const removed = S.catalog.splice(i, 1)[0];
+    renderCatalog(); saveState(true);
+    toast('הסעיף הוסר מהמחירון', { label:'בטל', fn: () => { S.catalog.splice(i, 0, removed); renderCatalog(); saveState(true); } });
+  } else if (u) {
+    const c = S.catalog.find(x => x.id === u.dataset.cdup);
+    if (!c) return;
+    S.catalog.push({ ...c, id:uid('cat'), desc:c.desc + ' (עותק)', usage:0 });
+    renderCatalog(); saveState(true);
+  }
+});
+$('catAddBtn').addEventListener('click', () => {
+  const desc = $('ncDesc').value.trim();
+  if (!desc) { toast('נא להזין תיאור סעיף'); $('ncDesc').focus(); return; }
+  S.catalog.push({
+    id: uid('cat'), category: $('ncCat').value.trim() || 'כללי', desc,
+    unit: $('ncUnit').value.trim() || "יח'", price: Math.max(0, num($('ncPrice').value)),
+    cost: Math.max(0, num($('ncCost').value)), usage: 0
+  });
+  ['ncDesc','ncPrice','ncCost'].forEach(id => $(id).value = '');
+  renderCatalog(); saveState(true);
+  toast('הסעיף נוסף למחירון');
+  $('ncDesc').focus();
+});
+$('catalogSearch').addEventListener('input', renderCatalog);
+$('bulkApply').addEventListener('click', async () => {
+  const p = num($('bulkPct').value);
+  if (!p) { toast('הזן אחוז שינוי (למשל 5 להעלאה, 5- להורדה)'); return; }
+  if (!await confirmBox('עדכון מחירים גורף', `לעדכן את מחירי הלקוח של כל ${S.catalog.length} הסעיפים ב-${p}%? העלויות לא ישתנו.`, 'עדכן')) return;
+  const before = S.catalog.map(c => c.price);
+  S.catalog.forEach(c => c.price = Math.max(0, r2(c.price * (1 + p / 100))));
+  renderCatalog(); saveState(true);
+  toast(`המחירים עודכנו ב-${p}%`, { label:'בטל', fn: () => { S.catalog.forEach((c, i) => c.price = before[i]); renderCatalog(); saveState(true); } });
+});
+$('catResetBtn').addEventListener('click', async () => {
+  if (!await confirmBox('איפוס מחירון', 'לאפס את המחירון למחירון ברירת המחדל? כל הסעיפים שהוספת יימחקו.', 'אפס')) return;
+  const before = structuredClone(S.catalog);
+  S.catalog = DEFAULT_CATALOG.map(c => ({ ...c }));
+  renderCatalog(); saveState(true);
+  toast('המחירון אופס', { label:'בטל', fn: () => { S.catalog = before; renderCatalog(); saveState(true); } });
+});
+
+/* --- CSV --- */
+function csvCell(v) { const s = String(v ?? ''); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+function download(name, content, type = 'text/plain;charset=utf-8') {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = el('a', { href:url, download:name });
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+$('catExportBtn').addEventListener('click', () => {
+  const rows = [['קטגוריה','תיאור','יחידה','מחיר ללקוח','עלות','שימושים']]
+    .concat(S.catalog.map(c => [c.category, c.desc, c.unit, c.price, c.cost, c.usage || 0]));
+  download(`ProQuote_מחירון_${todayISO()}.csv`, '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n'), 'text/csv;charset=utf-8');
+  toast('המחירון יוצא ל-CSV');
+});
+function parseCsv(text) {
+  const rows = []; let cur = [], val = '', q = false;
+  text = text.replace(/^﻿/, '');
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"' && text[i+1] === '"') { val += '"'; i++; }
+      else if (c === '"') q = false;
+      else val += c;
+    } else if (c === '"') q = true;
+    else if (c === ',') { cur.push(val); val = ''; }
+    else if (c === '\n') { cur.push(val); rows.push(cur); cur = []; val = ''; }
+    else if (c !== '\r') val += c;
+  }
+  if (val || cur.length) { cur.push(val); rows.push(cur); }
+  return rows.filter(r => r.some(c => String(c).trim()));
+}
+$('catImportFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const rows = parseCsv(String(fr.result));
+      if (!rows.length) throw new Error('empty');
+      const start = /קטגור|category/i.test(rows[0][0] || '') ? 1 : 0;
+      let added = 0;
+      rows.slice(start).forEach(r => {
+        const desc = String(r[1] || '').trim();
+        if (!desc) return;
+        S.catalog.push({ id:uid('cat'), category:String(r[0] || 'כללי').trim() || 'כללי', desc,
+          unit:String(r[2] || "יח'").trim(), price:Math.max(0, num(r[3])), cost:Math.max(0, num(r[4])), usage:0 });
+        added++;
+      });
+      renderCatalog(); saveState(true);
+      toast(`יובאו ${added} סעיפים למחירון`);
+    } catch (err) { toast('קובץ ה-CSV אינו תקין'); console.error(err); }
+    e.target.value = '';
+  };
+  fr.readAsText(file, 'utf-8');
+});
+
+/* ------------------------------ הגדרות ------------------------------ */
+function fillSettings() {
+  const b = S.business, st = S.settings;
+  $('bizName').value = b.name; $('bizSlogan').value = b.slogan; $('bizPhone').value = b.phone;
+  $('bizEmail').value = b.email; $('bizId').value = b.id; $('bizAddress').value = b.address;
+  $('vatRate').value = b.vatRate;
+  $('targetMargin').value = st.targetMargin; $('defValidity').value = st.defaultValidity;
+  $('followDays').value = st.followUpDays; $('defTerms').value = st.defaultTerms;
+  const p = $('logoPreview');
+  if (b.logo) { p.src = b.logo; p.hidden = false; } else { p.hidden = true; p.removeAttribute('src'); }
+}
+const BIZ_MAP = { bizName:'name', bizSlogan:'slogan', bizPhone:'phone', bizEmail:'email', bizId:'id', bizAddress:'address' };
+Object.keys(BIZ_MAP).forEach(id => $(id).addEventListener('input', () => {
+  S.business[BIZ_MAP[id]] = $(id).value; syncBizHeader(); saveState();
+}));
+$('vatRate').addEventListener('input', () => {
+  S.business.vatRate = clamp(num($('vatRate').value), 0, 100);
+  // המע"מ של ההצעה הפתוחה מתעדכן; הצעות שנשמרו שומרות על המע"מ ההיסטורי שלהן
+  S.current.vatRate = S.business.vatRate;
+  recalcUI(); syncBizHeader(); saveState();
+});
+$('targetMargin').addEventListener('input', () => { S.settings.targetMargin = clamp(num($('targetMargin').value), 0, 99); recalcUI(); renderCatalog(); saveState(); });
+$('defValidity').addEventListener('input', () => { S.settings.defaultValidity = clamp(Math.round(num($('defValidity').value)), 0, 365); saveState(); });
+$('followDays').addEventListener('input', () => { S.settings.followUpDays = clamp(Math.round(num($('followDays').value)), 1, 120); renderFollowUps(); saveState(); });
+$('defTerms').addEventListener('input', () => { S.settings.defaultTerms = $('defTerms').value; saveState(); });
+
+/* לוגו: דחיסה בצד הלקוח כדי לא למלא את האחסון המקומי */
+$('logoFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!/^image\//.test(file.type)) { toast('נא לבחור קובץ תמונה'); return; }
+  const fr = new FileReader();
+  fr.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const maxW = 520, maxH = 200;
+      const scale = Math.min(1, maxW / img.width, maxH / img.height);
+      const w = Math.max(1, Math.round(img.width * scale)), h = Math.max(1, Math.round(img.height * scale));
+      const cv = el('canvas', { width:w, height:h });
+      const ctx = cv.getContext('2d');
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      let out;
+      try { out = cv.toDataURL('image/png'); } catch (err) { out = String(fr.result); }
+      if (out.length > 180000) {
+        const cv2 = el('canvas', { width:w, height:h });
+        const c2 = cv2.getContext('2d');
+        c2.fillStyle = '#ffffff'; c2.fillRect(0, 0, w, h);
+        c2.drawImage(img, 0, 0, w, h);
+        out = cv2.toDataURL('image/jpeg', 0.85);
+      }
+      S.business.logo = out;
+      fillSettings(); syncBizHeader(); saveState(true); renderStorageInfo();
+      toast('הלוגו עודכן ונדחס');
+    };
+    img.onerror = () => toast('לא ניתן לקרוא את התמונה');
+    img.src = String(fr.result);
+  };
+  fr.readAsDataURL(file);
+  e.target.value = '';
+});
+$('logoClear').addEventListener('click', () => {
+  S.business.logo = ''; fillSettings(); syncBizHeader(); saveState(true); renderStorageInfo(); toast('הלוגו הוסר');
+});
+
+function renderStorageInfo() {
+  let bytes = 0;
+  try { bytes = new Blob([localStorage.getItem(KEY) || '']).size; } catch (e) {}
+  const kb = (bytes / 1024).toFixed(1);
+  $('storageInfo').textContent =
+    `${S.quotes.length} הצעות · ${aggregateClients().length} לקוחות · ${S.catalog.length} סעיפי מחירון · נפח שמור: ${kb}KB (מתוך ~5MB זמינים)`;
+}
+
+/* גיבוי / שחזור / ייצוא / מחיקה */
+function doBackup() {
+  download(`ProQuote_Backup_${todayISO()}.json`, JSON.stringify({ ...S, exportedAt:new Date().toISOString() }, null, 2), 'application/json');
+  toast('קובץ הגיבוי הורד');
+}
+function doRestore(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = async () => {
+    let data;
+    try { data = JSON.parse(String(fr.result)); } catch (err) { toast('קובץ הגיבוי אינו תקין'); return; }
+    if (!data || typeof data !== 'object' || (!data.quotes && !data.savedQuotes && !data.business)) { toast('הקובץ אינו גיבוי של ProQuote'); return; }
+    const cnt = (data.quotes || data.savedQuotes || []).length;
+    if (!await confirmBox('שחזור מגיבוי', `הקובץ מכיל ${cnt} הצעות. השחזור יחליף את כל הנתונים הקיימים במכשיר. להמשיך?`, 'שחזר')) return;
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (err) { toast('השחזור נכשל — האחסון מלא'); return; }
+    location.reload();
+  };
+  fr.readAsText(file, 'utf-8');
+  e.target.value = '';
+}
+$('backupBtn').addEventListener('click', doBackup);
+$('backupBtn2').addEventListener('click', doBackup);
+$('restoreFile').addEventListener('change', doRestore);
+$('restoreFile2').addEventListener('change', doRestore);
+$('exportQuotesCsv').addEventListener('click', () => {
+  const head = ['מספר הצעה','תאריך','סטטוס','לקוח','טלפון','כתובת','עיר','GPS','פרויקט','סעיפים','לפני מע"מ','מע"מ %','סה"כ כולל מע"מ','עלות','רווח','רווחיות %','תוקף עד','נשמר'];
+  const rows = [head].concat(S.quotes.map(q => {
+    const f = calc(q);
+    return [q.quoteNum, q.quoteDate, STATUS_META[statusKey(q)].label, q.clientName, phoneLocal(q.clientPhone),
+      q.clientAddress, q.clientCity || '', q.clientCoords ? `${q.clientCoords.lat},${q.clientCoords.lng}` : '',
+      q.projectTitle, q.items.length, f.beforeVat, f.vatRate, f.grand, f.cost, f.profit,
+      Math.round(f.margin), expiryISO(q), q.savedAt || ''];
+  }));
+  download(`ProQuote_הצעות_${todayISO()}.csv`, '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n'), 'text/csv;charset=utf-8');
+  toast('ההצעות יוצאו ל-CSV');
+});
+$('wipeBtn').addEventListener('click', async () => {
+  if (!await confirmBox('מחיקת כל הנתונים', 'פעולה זו תמחק את כל הלקוחות, ההצעות והמחירון מהמכשיר ואינה ניתנת לשחזור. מומלץ להוריד גיבוי קודם. למחוק?', 'מחק הכל')) return;
+  try { localStorage.removeItem(KEY); LEGACY_KEYS.forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  location.reload();
+});
+
+/* ------------------------------ וואטסאפ והדפסה ------------------------------ */
+function waMessage(full) {
+  const q = S.current, f = calc(q), b = S.business;
+  let t = `שלום ${q.clientName || ''},\nמצורף סיכום הצעת מחיר #${q.quoteNum}`;
+  t += q.projectTitle ? ` עבור *${q.projectTitle}*` : '';
+  t += q.clientAddress ? ` (${q.clientAddress})` : '';
+  t += '.\n';
+  if (full && q.items.length) {
+    t += '\n*פירוט הסעיפים:*\n';
+    q.items.forEach((it, i) => {
+      t += `${i+1}. ${it.desc} — ${num(it.qty)} ${it.unit} × ${money(it.price)} = ${money(f.lines[i].total)}\n`;
+    });
+    if (f.waste) t += `תוספת פחת (${q.wastePct}%): ${money(f.waste)}\n`;
+    if (f.discount) t += `הנחה: −${money(f.discount)}\n`;
+    t += `סה"כ לפני מע"מ: ${money(f.beforeVat)}\nמע"מ ${f.vatRate}%: ${money(f.vat)}\n`;
+  }
+  t += `\n*סה"כ לתשלום כולל מע"מ: ${money(f.grand)}*\n`;
+  if (q.milestones.length) {
+    t += '\n*לוח תשלומים:*\n';
+    q.milestones.forEach(m => {
+      const amt = m.mode === 'pct' ? r2(f.grand * num(m.val) / 100) : r2(num(m.val));
+      t += `• ${m.label || 'תשלום'}: ${money(amt)}${m.mode === 'pct' ? ` (${num(m.val)}%)` : ''}\n`;
+    });
+  }
+  if (q.validityDays) t += `\nההצעה בתוקף עד ${dateHe(expiryISO(q))}.`;
+  t += `\n\nבברכה,\n${b.name || ''}${b.phone ? ' — ' + phonePretty(b.phone) : ''}`;
+  return t;
+}
+$('waBtn').addEventListener('click', () => {
+  const q = S.current;
+  if (!q.items.length) { toast('אין סעיפים בהצעה'); return; }
+  if (q.clientName.trim()) saveQuote(true);
+  const ph = phoneIntl(q.clientPhone);
+  if (!ph) { toast('אין מספר טלפון תקין ללקוח'); $('clientPhone').focus(); return; }
+  window.open(`https://wa.me/${ph}?text=${encodeURIComponent(waMessage($('waMode').value === 'full'))}`, '_blank', 'noopener');
+});
+
+$('printBtn').addEventListener('click', () => {
+  if (!S.current.items.length) { toast('אין סעיפים להדפסה'); return; }
+  if (S.current.clientName.trim()) saveQuote(true);
+  window.print();
+});
+function togglePrintRows(on) {
+  const fin = calc(S.current);
+  const map = [['tLineDisc', fin.lineDisc], ['tWaste', fin.waste], ['tDiscount', fin.discount]];
+  map.forEach(([id, v]) => {
+    const ln = $(id)?.closest('.ln');
+    if (ln) ln.style.display = (on && !v) ? 'none' : '';
+  });
+  S.current.items.forEach((it, i) => {
+    ['qty','price'].forEach(f => {
+      const m = document.querySelector(`[data-print="${f}:${i}"]`);
+      if (m) m.textContent = f === 'price' ? money2(it.price) : String(num(it.qty));
+    });
+  });
+}
+window.addEventListener('beforeprint', () => {
+  syncBizHeader();
+  togglePrintRows(true);
+  renderDocMilestones(calc(S.current));
+  // התאמת גובה שדות הטקסט כדי שלא ייחתך תוכן ב-PDF
+  const ta = $('quoteNotes');
+  ta.dataset.h = ta.style.height;
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
+});
+window.addEventListener('afterprint', () => { const ta = $('quoteNotes'); ta.style.height = ta.dataset.h || ''; togglePrintRows(false); });
+try {
+  const mq = window.matchMedia('print');
+  const h = (e) => togglePrintRows(e.matches);
+  if (mq.addEventListener) mq.addEventListener('change', h); else if (mq.addListener) mq.addListener(h);
+} catch (e) {}
+
+/* ------------------------------ חיווט העורך ------------------------------ */
+const FIELD_MAP = {
+  clientName:'clientName', clientPhone:'clientPhone', clientEmail:'clientEmail',
+  clientAddress:'clientAddress', projectTitle:'projectTitle', quoteNotes:'notes', internalNotes:'internalNotes'
+};
+Object.entries(FIELD_MAP).forEach(([id, field]) => {
+  $(id).addEventListener('input', () => {
+    S.current[field] = $(id).value;
+    S.current.updatedAt = new Date().toISOString();
+    if (id === 'clientName' && $(id).value.trim()) $(id).classList.remove('err');
+    if (id === 'clientAddress') {
+      S.current.clientCity = extractCity($(id).value);
+      renderGeoUI();
+    }
+    if (id === 'clientName' || id === 'clientPhone') {
+      clearTimeout(crmSearchTimer);
+      crmSearchTimer = setTimeout(checkReturning, 250);
+      if (id === 'clientPhone') validatePhoneUI();
+    }
+    saveState();
+  });
+});
+$('quoteDate').addEventListener('change', () => { S.current.quoteDate = $('quoteDate').value || todayISO(); updateExpiryBadge(); saveState(); });
+$('qValidity').addEventListener('input', () => { S.current.validityDays = clamp(Math.round(num($('qValidity').value)), 0, 365); updateExpiryBadge(); saveState(); });
+$('qStatus').addEventListener('change', () => {
+  S.current.status = $('qStatus').value;
+  if (S.current.status === 'sent' && !S.current.sentAt) S.current.sentAt = todayISO();
+  if (['approved','rejected'].includes(S.current.status)) S.current.decidedAt = todayISO();
+  const saved = S.quotes.find(x => x.id === S.current.id);
+  if (saved) { saved.status = S.current.status; saved.sentAt = S.current.sentAt; saved.decidedAt = S.current.decidedAt; }
+  syncBizHeader(); updateExpiryBadge(); saveState(true);
+});
+$('wasteOn').addEventListener('change', () => { S.current.wasteEnabled = $('wasteOn').checked; recalcUI(); });
+$('wastePct').addEventListener('input', () => { S.current.wastePct = clamp(num($('wastePct').value), 0, 100); recalcUI(); });
+$('discMode').addEventListener('change', () => { S.current.discountMode = $('discMode').value; recalcUI(); });
+$('discVal').addEventListener('input', () => { S.current.discountVal = Math.max(0, num($('discVal').value)); recalcUI(); });
+$('roundOn').addEventListener('change', () => { S.current.roundTotal = $('roundOn').checked; recalcUI(); });
+$('catFilter').addEventListener('change', renderCatPicker);
+$('catSearch').addEventListener('input', renderCatPicker);
+$('addBlankBtn').addEventListener('click', () => {
+  S.current.items.push({ category:'כללי', desc:'', unit:"יח'", qty:1, price:0, cost:0, discPct:0 });
+  renderItems();
+  const last = $('itemRows').lastElementChild;
+  last?.querySelector('[data-f="desc"]')?.focus();
+});
+$('saveBtn').addEventListener('click', () => saveQuote());
+$('dupBtn').addEventListener('click', () => duplicateQuote(null));
+$('newQuoteBtn').addEventListener('click', async () => {
+  if (S.current.items.length && !S.quotes.some(x => x.id === S.current.id)) {
+    if (!await confirmBox('הצעה חדשה', 'ההצעה הפתוחה לא נשמרה בתיק לקוח. לפתוח הצעה חדשה בכל זאת?', 'פתח חדשה')) return;
+  }
+  newQuote(); toast('נפתחה הצעה חדשה');
+});
+$('clearItemsBtn').addEventListener('click', async () => {
+  if (!S.current.items.length) return;
+  const before = structuredClone(S.current.items);
+  if (!await confirmBox('ניקוי סעיפים', `להסיר את כל ${before.length} הסעיפים מההצעה הפתוחה?`, 'נקה')) return;
+  S.current.items = [];
+  renderItems();
+  toast('הסעיפים נוקו', { label:'בטל', fn: () => { S.current.items = before; renderItems(); } });
+});
+$('termsDefaultBtn').addEventListener('click', () => {
+  S.current.notes = S.settings.defaultTerms || DEFAULT_TERMS;
+  $('quoteNotes').value = S.current.notes; saveState(); toast('התנאים נטענו');
+});
+$('termsSaveBtn').addEventListener('click', () => {
+  S.settings.defaultTerms = $('quoteNotes').value;
+  $('defTerms').value = S.settings.defaultTerms;
+  saveState(true); toast('נשמר כתנאי ברירת מחדל להצעות הבאות');
+});
+$('msAdd').addEventListener('click', () => { S.current.milestones.push({ label:'', mode:'pct', val:0 }); renderMilestones(); saveState(); });
+$('msPreset').addEventListener('click', () => {
+  S.current.milestones = [
+    { label:'מקדמה בחתימת ההצעה', mode:'pct', val:30 },
+    { label:'באמצע העבודה', mode:'pct', val:40 },
+    { label:'בסיום ומסירה', mode:'pct', val:30 }
+  ];
+  renderMilestones(); saveState(); toast('נטען לוח תשלומים 30/40/30');
+});
+['crmSearch'].forEach(id => $(id).addEventListener('input', () => { clearTimeout(crmSearchTimer); crmSearchTimer = setTimeout(renderCRM, 200); }));
+$('crmStatus').addEventListener('change', renderCRM);
+$('crmCity').addEventListener('change', renderCRM);
+$('crmSort').addEventListener('change', renderCRM);
+$$('nav.tabs .tab').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+
+/* ------------------------------ ערכת נושא וקיצורים ------------------------------ */
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  S.settings.theme = t;
+  $('themeBtn').textContent = t === 'dark' ? '☀️ בהיר' : '🌙 כהה';
+  if (activeTab === 'dash') renderDashboard();
+}
+$('themeBtn').addEventListener('click', () => { applyTheme(S.settings.theme === 'dark' ? 'light' : 'dark'); saveState(); });
+
+document.addEventListener('keydown', (e) => {
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '');
+  if (e.key === 'Escape') { $('modalBg').classList.remove('on'); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveQuote(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') { e.preventDefault(); $('newQuoteBtn').click(); return; }
+  if (e.altKey && /^[1-5]$/.test(e.key)) { e.preventDefault(); switchTab(TABS[+e.key - 1]); return; }
+  if (!typing && !e.ctrlKey && !e.metaKey && !e.altKey && e.key.toLowerCase() === 'd') {
+    applyTheme(S.settings.theme === 'dark' ? 'light' : 'dark'); saveState();
+  }
+});
+window.addEventListener('beforeunload', () => { saveState(true); });
+
+/* ------------------------------ נתוני הדגמה (?demo=1) ------------------------------ */
+function monthsAgo(m, day) {
+  const d = new Date();
+  d.setDate(1);
+  d.setMonth(d.getMonth() - m);
+  d.setDate(Math.min(day || 12, 28));
+  return d.toLocaleDateString('sv-SE');
+}
+
+const DEMO_CLIENTS = [
+  { n:'משפחת לוי', p:'052-9876543', a:'רוטשילד 45, פתח תקווה', t:'שיפוץ חדר רחצה קומפלט כולל אינסטלציה',
+    st:'approved', m:4, it:[[15,1],[16,1],[12,18],[14,6],[19,4]], ms:true,
+    acc:{ floor:'3', elevator:true, code:'#1234', parking:'חניה בכחול-לבן ברחוב המקביל' },
+    gps:{ lat:32.0892, lng:34.8878 }, note:'לקוח מעולה, שילם בזמן. הבטיח להמליץ לשכנים בבניין.' },
+  { n:'משפחת לוי', p:'052-9876543', a:'רוטשילד 45, פתח תקווה', t:'צביעת סלון ומסדרון אחרי השיפוץ',
+    st:'approved', m:1, it:[[1,62],[3,24],[19,3]], ms:false,
+    acc:{ floor:'3', elevator:true, code:'#1234', parking:'חניה בכחול-לבן ברחוב המקביל' },
+    gps:{ lat:32.0892, lng:34.8878 }, note:'עבודה חוזרת — לקוח מחזיר.' },
+  { n:'דני כהן', p:'054-1112233', a:'הרצל 10, פתח תקווה', t:'הנמכת גבס בסלון והכנה לתאורה',
+    st:'sent', m:0, d:9, it:[[6,14],[19,8],[1,38]], ms:true,
+    acc:{ floor:'1', elevator:false, code:'', parking:'פריקה מאחור, אין חניה ברחוב' }, note:'ביקש לחזור אליו ביום ראשון.' },
+  { n:'שרה אבני', p:'053-4445566', a:'ויצמן 8, נתניה', t:'שיפוץ מטבח — פירוק, ריצוף וחשמל',
+    st:'approved', m:2, it:[[8,16],[11,16],[17,2],[18,4],[20,1]], ms:true,
+    acc:{ floor:'5', elevator:true, code:'2580', parking:'' } },
+  { n:'משפחת מזרחי', p:'050-7778899', a:'ז\'בוטינסקי 120, ראשון לציון', t:'החלקת קירות שפכטל אמריקאי בדירה',
+    st:'rejected', m:3, it:[[2,86],[1,30]], ms:false, note:'בחרו קבלן זול יותר — לא לרדת במחיר בפעם הבאה.' },
+  { n:'אולמי בית הכרם', p:'02-6543210', a:'הרצוג 44, ירושלים', t:'איטום וחיפוי שירותי אולם — 3 חדרים',
+    st:'sent', m:1, d:4, it:[[14,22],[12,48],[16,3],[11,3]], ms:true,
+    acc:{ floor:'0', elevator:false, code:'5577', parking:'כניסת ספקים מרחוב אחורי' }, note:'לא ענו כבר שבועיים — לתזכר.' },
+  { n:'עדי שחר', p:'058-2223344', a:'שדרות ירושלים 3, פתח תקווה', t:'בניית קיר גבס וחלוקת חדר ילדים',
+    st:'draft', m:0, d:2, it:[[5,11],[1,26]], ms:false,
+    acc:{ floor:'2', elevator:false, code:'', parking:'' } }
+];
+
+function seedDemo() {
+  const cat = S.catalog;
+  S.business = { name:'א.ל הנדסה ושיפוצים', slogan:'עבודות גמר, שיפוצים כלליים ופרויקטים עד המפתח',
+    phone:'050-123-4567', email:'info@example.co.il', id:'305123456', address:'פתח תקווה', logo:'', vatRate:18 };
+  S.settings = { ...S.settings, targetMargin:35, defaultValidity:14, followUpDays:7, defaultTerms:DEFAULT_TERMS };
+  S.quotes = DEMO_CLIENTS.map((c, i) => {
+    const items = c.it.map(([id, qty]) => {
+      const src = cat.find(x => x.id === 'c' + id) || cat[0];
+      return { category:src.category, desc:src.desc, unit:src.unit, qty, price:src.price, cost:src.cost, discPct:0 };
+    });
+    const date = monthsAgo(c.m, c.d);
+    return normalizeQuote({
+      id:'demo_' + i, quoteNum:1001 + i, status:c.st, clientName:c.n, clientPhone:c.p,
+      clientEmail:'', clientAddress:c.a, clientCity:extractCity(c.a), clientCoords:c.gps || null,
+      siteAccess:c.acc || {}, projectTitle:c.t, quoteDate:date, validityDays:14,
+      sentAt:date, decidedAt:(c.st === 'approved' || c.st === 'rejected') ? date : null,
+      wasteEnabled:i % 3 === 0, wastePct:10, discountMode:'amount', discountVal:i === 3 ? 400 : 0,
+      roundTotal:true, vatRate:18, notes:DEFAULT_TERMS, internalNotes:c.note || '',
+      milestones: c.ms ? [
+        { label:'מקדמה בחתימת ההצעה', mode:'pct', val:30 },
+        { label:'באמצע העבודה', mode:'pct', val:40 },
+        { label:'בסיום ומסירה', mode:'pct', val:30 }
+      ] : [],
+      items, savedAt:new Date(date + 'T10:00:00').toLocaleString('he-IL')
+    }, 18);
+  }).sort((a, b) => (b.quoteDate || '').localeCompare(a.quoteDate || ''));
+  // שימושים במחירון כדי שהסעיפים הנפוצים יצופו למעלה
+  S.quotes.forEach(q => q.items.forEach(it => {
+    const c = S.catalog.find(x => x.desc === it.desc);
+    if (c) c.usage = (c.usage || 0) + 1;
+  }));
+  S.current = structuredClone(S.quotes.find(q => q.status === 'sent') || S.quotes[0]);
+  saveState(true);
+}
+
+function mountDemoBar() {
+  const bar = el('div', { id:'demoBar', class:'no-print' }, [
+    el('div', { class:'wrap' }, [
+      el('div', { class:'in' }, [
+        el('span', { text:'🧪 מצב הדגמה — כל הנתונים כאן הם דוגמה בלבד ונשמרים רק בדפדפן שלך.' }),
+        el('div', { style:'display:flex; gap:7px; flex-wrap:wrap' }, [
+          el('button', { class:'btn btn-sm', id:'demoReset', text:'↻ אפס נתוני הדגמה' }),
+          el('a', { class:'btn btn-sm', href:location.pathname, text:'🚀 התחל נקי (מצב אמיתי)' })
+        ])
+      ])
+    ])
+  ]);
+  document.body.insertBefore(bar, document.body.querySelector('header.app'));
+  $('demoReset').addEventListener('click', async () => {
+    if (!await confirmBox('איפוס הדגמה', 'לטעון מחדש את נתוני הדוגמה המקוריים?', 'אפס')) return;
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    location.reload();
+  });
+}
+
+/* ------------------------------ אתחול ------------------------------ */
+(function init() {
+  loadState();
+  if (DEMO) {
+    if (!S.quotes.length) seedDemo();
+    mountDemoBar();
+  }
+  applyTheme(S.settings.theme === 'dark' ? 'dark' : 'light');
+  if (!S.business.name) {
+    // התקנה ראשונה: נתוני דמו קלים כדי שהמסך לא יהיה ריק
+    S.business = { ...S.business, name:'העסק שלי — שיפוצים ועבודות גמר', slogan:'עבודות גמר, שיפוצים כלליים ופרויקטים עד המפתח', phone:'050-0000000', id:'', address:'', vatRate:18 };
+  }
+  if (!S.current.notes) S.current.notes = S.settings.defaultTerms || DEFAULT_TERMS;
+  fillSettings();
+  renderCatFilter();
+  renderCatPicker();
+  renderQuickClients();
+  fillBuilderInputs();
+  renderCRM();
+  renderStorageInfo();
+  if (DEMO) toast('מצב הדגמה: 7 הצעות ו-6 לקוחות לדוגמה נטענו — אפשר לשחק עם הכול', null, 5200);
+  else if (!S.quotes.length && !S.current.items.length) {
+    toast('ברוך הבא ל-ProQuote v3 — התחל בהגדרת פרטי העסק בלשונית הגדרות', null, 5200);
+  }
+})();
+</script>
+</body>
+</html>
