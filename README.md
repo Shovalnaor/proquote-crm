@@ -22,6 +22,7 @@ ProQuote נותן לו לבנות כתב כמויות ב-30 שניות מתוך 
 ## תוכן עניינים
 
 - [צילומי מסך](#צילומי-מסך)
+- [סנכרון יומן ושימוש בנייד](#סנכרון-יומן-ושימוש-בנייד)
 - [יכולות](#יכולות)
 - [למה קובץ אחד בלי תלויות](#למה-קובץ-אחד-בלי-תלויות)
 - [הרצה מקומית](#הרצה-מקומית)
@@ -65,10 +66,40 @@ ProQuote נותן לו לבנות כתב כמויות ב-30 שניות מתוך 
 
 ![מחירון](docs/screenshots/06-catalog.png)
 
+### בטלפון — iPhone ו-Android
+טבלת הסעיפים הופכת לכרטיסים, סרגל הפעולות נדבק לתחתית המסך, וכל שדה הוא לפחות 44px (ובגופן 16px, כדי ש-iOS לא יזום בכל לחיצה).
+
+<p>
+<img src="docs/screenshots/08-mobile-builder.png" width="300" alt="עורך בנייד" />
+<img src="docs/screenshots/09-mobile-crm.png" width="300" alt="CRM בנייד" />
+</p>
+
 ### ההצעה כפי שהלקוח מקבל אותה (PDF)
 כל המידע הפנימי — עלויות, רווח, הערות פנימיות ופרטי גישה — נעלם מהמסמך המודפס.
 
 ![PDF](docs/screenshots/07-pdf.png)
+
+---
+
+## סנכרון יומן ושימוש בנייד
+
+### 📅 פגישות שעוברות ליומן של הטלפון
+לכל הצעת מחיר אפשר לקבוע **פגישה בשטח** — מדידה וסיור, תחילת עבודה, מסירה או פגישה עם הלקוח — ולשלוח אותה ליומן:
+
+- **קובץ `.ics` תקני (RFC 5545)** שנבנה בדפדפן עצמו, בלי שרת ובלי שירות חיצוני. הוא נפתח ישירות ב**יומן של אייפון**, ב**יומן של אנדרואיד**, ב-Google Calendar וב-Outlook — זהו הפורמט שכל היומנים מדברים.
+- **כפתור Google Calendar** שפותח את האירוע מוכן למילוי (נוח במיוחד באנדרואיד).
+- **תזכורת אוטומטית שעתיים לפני** (`VALARM`), ואם יש נקודת GPS היא נשמרת באירוע כ-`GEO` — היומן יודע איפה זה.
+- גוף האירוע נושא את מה שבאמת צריך בשטח: מספר ההצעה, הסכום, טלפון הלקוח, הקומה, קוד הכניסה, הערות החניה וקישור Waze לנקודה המדויקת.
+- **ייצוא כל היומן בקובץ אחד** מלשונית הלקוחות: כל הפגישות + תזכורות מעקב להצעות שלא נענו + תאריכי פקיעת תוקף, כאירועי יום שלם.
+
+הטקסט בקובץ מקופל ל-75 אוקטטים לפי התקן — בלי זה יומנים קפדניים נשברים על עברית.
+
+### 📱 מותאם לטלפון
+- טבלת הסעיפים הופכת בטלפון ל**כרטיסים** עם תוויות, במקום טבלה רחבה שאי אפשר לקרוא
+- סרגל פעולות דביק בתחתית (שמירה / PDF / וואטסאפ) + תמיכה ב-`safe-area` של מסכי iPhone עם נאטץ'
+- שדות בגופן 16px — מונע את הזום האוטומטי של iOS בכל לחיצה על שדה
+- כל יעד לחיצה הוא לפחות 44px, ואין גלילה אופקית באף מסך (נבדק ב-390px וב-360px)
+- `apple-touch-icon` + meta-tags של PWA: **"הוסף למסך הבית"** באייפון ובאנדרואיד נותן אפליקציה במסך מלא עם אייקון משלה
 
 ---
 
@@ -87,6 +118,12 @@ ProQuote נותן לו לבנות כתב כמויות ב-30 שניות מתוך 
 - זיהוי לקוח חוזר בזמן ההקלדה, עם מילוי פרטים אוטומטי מההצעה הקודמת
 - תוקף הצעה והתראת פקיעה, ורשימת **"דורש טיפול ממך"**: הצעות שנשלחו ולא נענו, טיוטות תקועות והצעות שפג תוקפן
 - חיפוש, סינון לפי סטטוס ולפי עיר, ומיון לפי פעילות / שווי / כמות הצעות / שם
+
+### 📅 יומן ופגישות
+- פגישה בשטח לכל הצעה, עם סוג פגישה ומשך
+- ייצוא `.ics` תקני לאייפון/אנדרואיד/Outlook + קישור ישיר ל-Google Calendar
+- רשימת "פגישות קרובות" ב-CRM עם ניווט ויומן בלחיצה
+- ייצוא יומן מלא: פגישות + תזכורות מעקב + תאריכי פקיעת תוקף
 
 ### 🚗 ניווט ולוגיסטיקת שטח
 - קישורי ניווט ישירים ל-**Waze, Google Maps ו-Apple Maps** — ללא מפתח API וללא ספריית מפות
@@ -164,7 +201,8 @@ index.html  (~2,500 שורות)
 ### נבדק
 הקובץ נבדק ב-Chromium דרך Playwright: החישובים אומתו מקצה לקצה (כולל הנחת שורה + פחת + הנחה + מע"מ + עיגול),
 נבדקה השמירה ב-`localStorage` לאחר רענון, נבדקו קישורי הניווט עם ובלי נקודת GPS, ונבדק שפרטי העלות והגישה
-**אינם** מופיעים בתצוגת ההדפסה. אפס שגיאות קונסול.
+**אינם** מופיעים בתצוגת ההדפסה. קובץ ה-`.ics` נבדק ברמת הבייטים: CRLF תקני, קיפול שורות מתחת ל-75 אוקטטים
+ומבנה `VEVENT`/`VALARM` תקף. הפריסה נבדקה ב-390px (iPhone) וב-360px (Android) — אפס גלילה אופקית ואפס שגיאות קונסול.
 
 ---
 
@@ -177,6 +215,7 @@ quote = {
   clientAddress, clientCity,        // העיר נגזרת אוטומטית מהכתובת
   clientCoords: { lat, lng } | null,// נקודת GPS מדויקת מהשטח
   siteAccess: { floor, elevator, code, parking },
+  meeting: { at, durationMin, kind },// פגישה בשטח → ICS / Google Calendar
   projectTitle, quoteDate, validityDays,
   vatRate,                          // מוקפא ברגע השמירה
   wasteEnabled, wastePct,
@@ -207,7 +246,8 @@ quote = {
 | דפדפן | מצב |
 |---|---|
 | Chrome / Edge (מחשב ונייד) | נבדק ✔ |
-| Safari (iOS ו-macOS) | עובד; `beforeprint` מוגבל, ולכן יש גם מאזין `matchMedia('print')` |
+| Safari (iOS ו-macOS) | נבדק ב-390px ✔ · `beforeprint` מוגבל, ולכן יש גם מאזין `matchMedia('print')` |
+| Chrome Android | נבדק ב-360px ✔ |
 | Firefox | עובד |
 | Internet Explorer | לא נתמך (הקוד משתמש ב-ES2020) |
 
@@ -219,6 +259,7 @@ quote = {
 - **אין גיאוקודינג כתובת ← קואורדינטות.** זו החלטה מכוונת: גיאוקודינג דורש מפתח API בתשלום. במקום זה — או נעילת GPS חד-פעמית באתר, או ש-Waze/Google פותרים את הכתובת בעצמם.
 - **Google Maps מגביל ל-10 תחנות** בקישור מסלול יחיד. מעבר לזה הממשק מודיע מפורשות כמה תחנות נשארו בחוץ.
 - **זו הצעת מחיר, לא חשבונית.** אין כאן חשבוניות, קבלות או דיווח למע"מ, והמסמך נושא הערה מפורשת על כך.
+- **היומן הוא ייצוא, לא סנכרון דו-כיווני.** הקובץ מוסיף אירועים ליומן; שינוי אירוע ביומן לא יחזור לאפליקציה. סנכרון אמיתי דורש שרת ו-OAuth — מה שסותר את העיקרון של אפס שרת.
 - אין בדיקת תקינות של מספר עוסק מורשה.
 
 ---
@@ -236,5 +277,7 @@ quote = {
 **ProQuote CRM** — a single-file, zero-dependency, offline-first quoting and CRM tool for contractors and tradespeople, built Hebrew-first with full RTL support.
 
 One `index.html` (~2,500 lines), no build step, no server, no CDN, no paid API keys. It covers quote building from a personal price book, live profit-margin control, an auto-derived client CRM with follow-up alerts, hand-written SVG analytics, field navigation (Waze / Google Maps / Apple Maps deep links + one-tap GPS pinning + multi-stop daily route planning), and a print stylesheet that produces a clean A4 PDF with all internal cost data stripped out.
+
+It also exports standards-compliant **RFC 5545 `.ics` calendar files** generated entirely in the browser — site meetings, follow-up reminders and quote-expiry dates drop straight into the iPhone Calendar, Android Calendar, Google Calendar or Outlook, with a 2-hour alarm and a `GEO` pin. The layout is phone-first: the line-items table becomes cards, actions stick to the bottom, inputs are 16px (no iOS zoom-on-focus), and "Add to Home Screen" gives a full-screen app on both platforms.
 
 **[→ Live demo](https://shovalnaor.github.io/proquote-crm/?demo=1)** · All data stays in the browser's `localStorage`; nothing is ever sent anywhere.

@@ -2,7 +2,16 @@
 <html lang="he" dir="rtl" data-theme="light">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0a0d11" media="(prefers-color-scheme: dark)" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="ProQuote" />
+<meta name="format-detection" content="telephone=no" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%232a78d6'/%3E%3Ctext x='90' y='118' font-family='Arial,sans-serif' font-size='78' font-weight='bold' fill='white' text-anchor='middle'%3EPQ%3C/text%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232a78d6'/%3E%3Ctext x='32' y='43' font-family='Arial,sans-serif' font-size='28' font-weight='bold' fill='white' text-anchor='middle'%3EPQ%3C/text%3E%3C/svg%3E" />
 <meta name="color-scheme" content="light dark" />
 <meta name="description" content="ProQuote CRM — מחשבון הצעות מחיר, בקרת רווחיות וניהול לקוחות לבעלי מקצוע" />
 <title>ProQuote CRM v3 — הצעות מחיר, רווחיות וניהול לקוחות</title>
@@ -191,6 +200,8 @@ th.col-cost{color:var(--crit-ink)}
   max-width:min(92vw,440px);
 }
 #toast.on{opacity:1; transform:none; pointer-events:auto}
+#toast:not(.on){visibility:hidden}
+#toastMsg{min-width:0; overflow-wrap:anywhere}
 #toast button{color:#8fc0ff; font-weight:800; font-size:12.5px; text-decoration:underline}
 .modal-bg{position:fixed; inset:0; z-index:95; background:rgba(8,12,18,.55); display:none; align-items:center; justify-content:center; padding:18px}
 .modal-bg.on{display:flex}
@@ -289,6 +300,80 @@ body.route-open #toast{bottom:auto; top:78px}
 .doc-only{display:none}
 .scrollbars::-webkit-scrollbar{width:9px;height:9px}
 .scrollbars::-webkit-scrollbar-thumb{background:var(--line-2); border-radius:5px}
+
+/* ---------- התאמה לנייד (iPhone / Android) ---------- */
+@media (hover:none){
+  .btn,.navchip,.tab,button{ -webkit-tap-highlight-color:transparent; touch-action:manipulation }
+  .btn-icon{ min-height:38px; width:38px }
+}
+@supports (padding:max(0px)){
+  body{ padding-inline:max(0px, env(safe-area-inset-left)) }
+  header.app{ padding-top:env(safe-area-inset-top) }
+}
+@media (max-width:640px){
+  body{ font-size:14px; padding-bottom:calc(84px + env(safe-area-inset-bottom)) }
+  /* 16px במובייל מונע זום אוטומטי של iOS בלחיצה על שדה */
+  .inp,.sel,.ta,.inp-sm{ font-size:16px; min-height:44px }
+  .inp-sm{ padding:7px 9px }
+  .btn{ min-height:44px }
+  .btn-sm{ min-height:38px }
+  .card-pad{ padding:14px }
+  .wrap{ padding:0 9px }
+  .brand p{ display:none }
+  .brand .mark{ width:34px; height:34px; border-radius:9px; font-size:13px }
+  .hdr-top{ padding:8px 0 }
+  .tab{ padding:9px 12px; font-size:13px }
+  .kpis{ grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:9px }
+  .kpi{ padding:11px 12px }
+  .kpi .k-val{ font-size:19px }
+  .profit .boxes{ grid-template-columns:1fr 1fr }
+  .totals{ max-width:none }
+
+  /* טבלת הסעיפים הופכת לכרטיסים — טבלה רחבה היא בלתי שמישה בטלפון */
+  table.t thead{ display:none }
+  table.t, table.t tbody, table.t tr, table.t td{ display:block; width:100% }
+  table.t tr{
+    border:1px solid var(--line); border-radius:var(--r); margin:10px 0; padding:6px 10px 10px;
+    background:var(--surface);
+  }
+  table.t td{ border:none; border-bottom:1px solid var(--line); padding:7px 0; display:flex; align-items:center; gap:10px; justify-content:space-between }
+  table.t td:last-child{ border-bottom:none }
+  table.t td[data-label]:not([data-label=""])::before{
+    content:attr(data-label); font-size:11.5px; font-weight:800; color:var(--muted); flex:0 0 92px;
+  }
+  table.t td.col-cost{ background:transparent }
+  table.t td > input,table.t td > select{
+    flex:1 1 auto; min-width:0; max-width:none !important; width:auto !important; text-align:right !important;
+  }
+  table.t td > .doc-only{ display:none }
+  table.t td.cell-total{ font-size:16px; color:var(--brand-2) }
+  .tbl-wrap{ overflow:visible }
+
+  /* select-ים עם min-width קבוע חייבים להתכווץ בטלפון */
+  select.sel,#quickClient{ min-width:0 !important; max-width:100% }
+  #quickClient{ width:100% !important }
+  .client-hd{ padding:13px }
+  .qrow{ padding:11px }
+  .f-grid{ gap:10px }
+  .access-grid{ padding:9px }
+  #routeBar{ max-height:62vh; bottom:calc(8px + env(safe-area-inset-bottom)) }
+  body.route-open{ padding-bottom:min(64vh,360px) }
+  #toast{ inset-inline:10px; width:auto; max-width:none; bottom:calc(10px + env(safe-area-inset-bottom)) }
+
+  /* סרגל פעולות דביק בתחתית המסך */
+  .actions-bar{
+    position:sticky; bottom:0; z-index:35; margin:0 -9px -9px;
+    border-radius:var(--r-lg) var(--r-lg) 0 0;
+    padding-bottom:calc(12px + env(safe-area-inset-bottom));
+    box-shadow:0 -6px 18px rgba(11,18,32,.14);
+  }
+  .actions-bar .btn{ flex:1 1 44%; }
+}
+@media (max-width:380px){
+  .tab{ padding:8px 9px; font-size:12.5px }
+  .kpis{ grid-template-columns:1fr 1fr }
+  table.t td::before{ flex-basis:84px; font-size:11px }
+}
 
 @page{ size:A4; margin:12mm 10mm; }
 @media print{
@@ -478,6 +563,33 @@ body.route-open #toast{bottom:auto; top:78px}
               <input class="inp inp-sm" id="acParking" placeholder="חניה בכחול-לבן ברחוב המקביל / פריקה מאחור" autocomplete="off" /></div>
           </div>
         </div>
+        <div class="c12 no-print">
+          <label class="lbl">📅 פגישה בשטח — סנכרון ליומן של הטלפון</label>
+          <div class="access-grid">
+            <div class="fld" style="flex:1 1 200px"><label class="lbl" for="mtAt">תאריך ושעה</label>
+              <input class="inp inp-sm" id="mtAt" type="datetime-local" /></div>
+            <div class="fld" style="flex:0 1 140px"><label class="lbl" for="mtKind">סוג הפגישה</label>
+              <select class="sel inp-sm" id="mtKind">
+                <option value="measure">📏 מדידה וסיור</option>
+                <option value="start">🔨 תחילת עבודה</option>
+                <option value="handover">🤝 מסירה</option>
+                <option value="meeting">☕ פגישה עם הלקוח</option>
+              </select></div>
+            <div class="fld" style="flex:0 1 110px"><label class="lbl" for="mtDur">משך</label>
+              <select class="sel inp-sm" id="mtDur">
+                <option value="30">30 דק'</option><option value="60">שעה</option>
+                <option value="90">שעה וחצי</option><option value="120">שעתיים</option>
+                <option value="240">חצי יום</option><option value="480">יום עבודה</option>
+              </select></div>
+            <div class="fld" style="flex:2 1 230px"><label class="lbl">הוספה ליומן</label>
+              <div style="display:flex; gap:6px; flex-wrap:wrap">
+                <button class="navchip" id="mtIcs" type="button" title="קובץ יומן תקני — נפתח ביומן של אייפון, אנדרואיד, Outlook ו-Google">📥 הוסף ליומן (.ics)</button>
+                <button class="navchip" id="mtGcal" type="button" title="פתיחה ישירה ב-Google Calendar">🗓️ Google</button>
+                <button class="btn-icon danger" id="mtClear" type="button" title="נקה פגישה">✕</button>
+              </div></div>
+          </div>
+          <span class="hint" id="mtHint"></span>
+        </div>
       </div>
     </div>
 
@@ -614,8 +726,8 @@ body.route-open #toast{bottom:auto; top:78px}
     </div>
 
     <!-- פעולות -->
-    <div class="card card-pad no-print" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between">
-      <div style="display:flex; flex-wrap:wrap; gap:9px">
+    <div class="card card-pad no-print actions-bar" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between">
+      <div style="display:flex; flex-wrap:wrap; gap:9px; flex:1 1 auto">
         <button class="btn btn-dark" id="saveBtn" title="Ctrl+S">💾 שמור בתיק הלקוח</button>
         <button class="btn btn-primary" id="printBtn" title="Ctrl+P">📄 הפק PDF מעוצב</button>
         <button class="btn btn-ghost" id="dupBtn">📋 שכפל כהצעה חדשה</button>
@@ -642,6 +754,14 @@ body.route-open #toast{bottom:auto; top:78px}
       <div class="kpi"><div class="k-lbl">✅ עסקאות שאושרו</div><div class="k-val tnum" style="color:var(--good-ink)" id="kApproved">₪0</div><div class="k-sub" id="kApprovedSub"></div></div>
       <div class="kpi"><div class="k-lbl">🎯 אחוז סגירה</div><div class="k-val tnum" id="kWin">0%</div><div class="k-sub" id="kWinSub"></div></div>
       <div class="kpi"><div class="k-lbl">📈 רווחיות ממוצעת</div><div class="k-val tnum" id="kMargin">0%</div><div class="k-sub">בהצעות שאושרו</div></div>
+    </div>
+
+    <div class="card card-pad" id="meetBox" hidden style="border-inline-start:6px solid var(--brand)">
+      <div class="row-between">
+        <h3 class="sec-title">📅 פגישות קרובות</h3>
+        <button class="btn btn-ghost btn-sm" id="icsExportAll" title="קובץ אחד עם כל הפגישות, תזכורות המעקב ותאריכי פקיעת התוקף">📥 ייצוא כל היומן (.ics)</button>
+      </div>
+      <div id="meetList" style="margin-top:10px; display:grid; gap:8px"></div>
     </div>
 
     <div class="card card-pad" id="followBox" hidden style="border-inline-start:6px solid var(--warn)">
@@ -1057,6 +1177,7 @@ function blankQuote(over = {}) {
     clientName: '', clientPhone: '', clientEmail: '', clientAddress: '',
     clientCity: '', clientCoords: null,
     siteAccess: { floor:'', elevator:false, code:'', parking:'' },
+    meeting: { at:'', durationMin:60, kind:'measure' },
     projectTitle: '', quoteDate: todayISO(), validityDays: 14,
     wasteEnabled: false, wastePct: 10, discountMode: 'amount', discountVal: 0,
     roundTotal: true, vatRate: 18, notes: DEFAULT_TERMS, internalNotes: '',
@@ -1090,6 +1211,11 @@ function normalizeQuote(q, fallbackVat) {
     clientAddress: String(q.clientAddress ?? ''),
     clientCity: String(q.clientCity ?? '') || extractCity(q.clientAddress),
     clientCoords: validCoords(q.clientCoords),
+    meeting: {
+      at: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(q.meeting?.at || '') ? String(q.meeting.at).slice(0, 16) : '',
+      durationMin: clamp(Math.round(num(q.meeting?.durationMin ?? 60)) || 60, 15, 600),
+      kind: ['measure','start','handover','meeting'].includes(q.meeting?.kind) ? q.meeting.kind : 'measure'
+    },
     siteAccess: {
       floor: String(q.siteAccess?.floor ?? ''),
       elevator: !!(q.siteAccess?.elevator),
@@ -1312,6 +1438,7 @@ function fillBuilderInputs() {
   $('acCode').value = q.siteAccess.code;
   $('acParking').value = q.siteAccess.parking;
   renderGeoUI();
+  renderMeetingUI();
   syncBizHeader();
   renderMilestones();
   renderItems();
@@ -1354,6 +1481,163 @@ function validatePhoneUI() {
   if (phoneValid(v)) { inp.classList.remove('err'); hint.textContent = '✔ ' + phonePretty(v); hint.style.color = 'var(--good-ink)'; }
   else { inp.classList.add('err'); hint.textContent = 'מספר לא תקין — בדוק ספרות'; hint.style.color = 'var(--crit-ink)'; }
 }
+
+/* ------------------------------ יומן: ICS תקני + Google Calendar ------------------------------ */
+/* RFC 5545. נבנה ידנית — אין ספרייה, אין שרת, והקובץ נפתח בכל יומן: iPhone, Android, Outlook, Google */
+const MEETING_KINDS = {
+  measure:  { label:'מדידה וסיור', icon:'📏' },
+  start:    { label:'תחילת עבודה', icon:'🔨' },
+  handover: { label:'מסירה',       icon:'🤝' },
+  meeting:  { label:'פגישה עם הלקוח', icon:'☕' }
+};
+
+function icsEsc(v) {
+  return String(v ?? '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+}
+/* קיפול שורות ל-75 אוקטטים כנדרש בתקן — בלי זה יומנים קפדניים נשברים על עברית */
+function icsFold(line) {
+  const enc = new TextEncoder();
+  let out = '', cur = '', len = 0;
+  for (const ch of line) {
+    const n = enc.encode(ch).length;
+    if (len + n > 73) { out += cur + '\r\n '; cur = ''; len = 1; }
+    cur += ch; len += n;
+  }
+  return out + cur;
+}
+function icsStampUTC(d) { return new Date(d).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); }
+function icsDay(iso) { return String(iso || '').slice(0, 10).replace(/-/g, ''); }
+
+function vevent(e) {
+  const L = ['BEGIN:VEVENT', 'UID:' + e.uid, 'DTSTAMP:' + icsStampUTC(new Date())];
+  if (e.allDay) {
+    L.push('DTSTART;VALUE=DATE:' + icsDay(e.start));
+    L.push('DTEND;VALUE=DATE:' + icsDay(addDays(String(e.start).slice(0, 10), 1)));
+  } else {
+    L.push('DTSTART:' + icsStampUTC(e.start));
+    L.push('DTEND:' + icsStampUTC(e.end));
+  }
+  L.push('SUMMARY:' + icsEsc(e.summary));
+  if (e.desc) L.push('DESCRIPTION:' + icsEsc(e.desc));
+  if (e.loc) L.push('LOCATION:' + icsEsc(e.loc));
+  if (e.geo) L.push(`GEO:${e.geo.lat};${e.geo.lng}`);
+  L.push('STATUS:CONFIRMED');
+  if (e.alarm) {
+    L.push('BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsEsc(e.summary), 'TRIGGER:' + e.alarm, 'END:VALARM');
+  }
+  L.push('END:VEVENT');
+  return L;
+}
+function buildICS(events, calName) {
+  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//ProQuote CRM//HE//', 'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH', 'X-WR-CALNAME:' + icsEsc(calName), 'X-WR-TIMEZONE:Asia/Jerusalem'];
+  events.forEach(e => L.push(...vevent(e)));
+  L.push('END:VCALENDAR');
+  return L.map(icsFold).join('\r\n') + '\r\n';
+}
+
+function meetingTitle(q) {
+  const k = MEETING_KINDS[q.meeting?.kind] || MEETING_KINDS.measure;
+  return `${k.icon} ${k.label} — ${q.clientName || 'לקוח'}`;
+}
+function meetingDesc(q) {
+  const f = calc(q), a = q.siteAccess || {};
+  const lines = [
+    `הצעת מחיר #${q.quoteNum}${q.projectTitle ? ' — ' + q.projectTitle : ''}`,
+    `סכום: ${money(f.grand)} כולל מע"מ (${q.items.length} סעיפים)`,
+    q.clientPhone ? `טלפון: ${phonePretty(q.clientPhone)}` : '',
+    a.floor ? `קומה ${a.floor}${a.elevator ? ' (יש מעלית)' : ' (ללא מעלית)'}` : '',
+    a.code ? `קוד כניסה: ${a.code}` : '',
+    a.parking ? `חניה/גישה: ${a.parking}` : '',
+    q.internalNotes ? `הערות: ${q.internalNotes}` : '',
+    q.clientCoords ? `נקודת GPS: https://waze.com/ul?ll=${q.clientCoords.lat},${q.clientCoords.lng}&navigate=yes` : ''
+  ].filter(Boolean);
+  return lines.join('\n');
+}
+function meetingRange(q) {
+  const start = new Date(q.meeting.at);
+  if (isNaN(start)) return null;
+  return { start, end: new Date(start.getTime() + (num(q.meeting.durationMin) || 60) * 60000) };
+}
+function meetingEvent(q) {
+  const r = meetingRange(q);
+  if (!r) return null;
+  return {
+    uid: `meet-${q.id}@proquote`, start:r.start, end:r.end,
+    summary: meetingTitle(q), desc: meetingDesc(q),
+    loc: q.clientAddress || '', geo: q.clientCoords || null, alarm: '-PT2H'
+  };
+}
+/* קובץ יומן מלא: פגישות + תזכורות מעקב + תאריכי פקיעת תוקף */
+function allCalendarEvents() {
+  const ev = [], days = Math.max(1, Math.round(num(S.settings.followUpDays) || 7));
+  S.quotes.forEach(q => {
+    const m = meetingEvent(q);
+    if (m) ev.push(m);
+    if (statusKey(q) === 'sent') {
+      ev.push({ uid:`follow-${q.id}@proquote`, start:addDays(q.sentAt || q.quoteDate, days), allDay:true,
+        summary:`📞 מעקב: ${q.clientName} — הצעה #${q.quoteNum}`,
+        desc: meetingDesc(q), loc:q.clientAddress || '', alarm:'-PT9H' });
+      if (q.validityDays) {
+        ev.push({ uid:`exp-${q.id}@proquote`, start:expiryISO(q), allDay:true,
+          summary:`⏰ פג תוקף: הצעה #${q.quoteNum} — ${q.clientName}`,
+          desc: meetingDesc(q), alarm:'-P1D' });
+      }
+    }
+  });
+  return ev;
+}
+function downloadICS(events, name, calName) {
+  if (!events.length) { toast('אין אירועים לייצוא'); return; }
+  download(name, buildICS(events, calName), 'text/calendar;charset=utf-8');
+  toast(events.length === 1
+    ? 'נוצר קובץ יומן — פתח אותו והיומן של הטלפון יוסיף את הפגישה'
+    : `נוצר קובץ יומן עם ${events.length} אירועים — פתח אותו והיומן של הטלפון יוסיף אותם`, null, 5000);
+}
+function gcalLink(q) {
+  const r = meetingRange(q);
+  if (!r) return null;
+  const p = new URLSearchParams({
+    action:'TEMPLATE', text: meetingTitle(q), details: meetingDesc(q),
+    location: q.clientAddress || '', dates: `${icsStampUTC(r.start)}/${icsStampUTC(r.end)}`
+  });
+  return 'https://calendar.google.com/calendar/render?' + p.toString();
+}
+
+function renderMeetingUI() {
+  const m = S.current.meeting || { at:'', durationMin:60, kind:'measure' };
+  $('mtAt').value = m.at || '';
+  $('mtKind').value = m.kind || 'measure';
+  $('mtDur').value = String(m.durationMin || 60);
+  const ok = !!meetingRange(S.current);
+  $('mtIcs').disabled = !ok;
+  $('mtGcal').disabled = !ok;
+  const h = $('mtHint');
+  if (!ok) { h.textContent = 'קבע תאריך ושעה כדי לשלוח את הפגישה ליומן של הטלפון (עובד באייפון, באנדרואיד ובאאוטלוק).'; h.style.color = 'var(--muted)'; }
+  else {
+    const r = meetingRange(S.current);
+    const d = daysBetween(todayISO(), r.start.toLocaleDateString('sv-SE'));
+    h.textContent = `${meetingTitle(S.current)} · ${r.start.toLocaleString('he-IL', { weekday:'long', day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit' })}` +
+      (d === 0 ? ' · היום' : d === 1 ? ' · מחר' : d > 1 ? ` · בעוד ${d} ימים` : ` · לפני ${Math.abs(d)} ימים`);
+    h.style.color = d < 0 ? 'var(--crit-ink)' : 'var(--good-ink)';
+  }
+}
+$('mtAt').addEventListener('change', () => { S.current.meeting.at = $('mtAt').value; renderMeetingUI(); saveState(true); });
+$('mtKind').addEventListener('change', () => { S.current.meeting.kind = $('mtKind').value; renderMeetingUI(); saveState(); });
+$('mtDur').addEventListener('change', () => { S.current.meeting.durationMin = num($('mtDur').value) || 60; renderMeetingUI(); saveState(); });
+$('mtClear').addEventListener('click', () => { S.current.meeting = { at:'', durationMin:60, kind:'measure' }; renderMeetingUI(); saveState(true); toast('הפגישה נוקתה'); });
+$('mtIcs').addEventListener('click', () => {
+  const e = meetingEvent(S.current);
+  if (!e) return;
+  if (S.current.clientName.trim()) saveQuote(true);
+  downloadICS([e], `ProQuote_פגישה_${S.current.quoteNum}.ics`, 'ProQuote — פגישה');
+});
+$('mtGcal').addEventListener('click', () => {
+  const u = gcalLink(S.current);
+  if (!u) return;
+  if (S.current.clientName.trim()) saveQuote(true);
+  openExternal(u);
+});
 
 /* ------------------------------ ניווט ונעילת מיקום בעורך ------------------------------ */
 function renderGeoUI() {
@@ -1448,22 +1732,23 @@ function renderItems() {
     });
 
     // לכל תא טקסט יש גם גרסת-הדפסה (span) כדי שתיאורים ארוכים לא ייחתכו ב-PDF
-    const cell = (field, opts) => el('td', { class: opts && opts.td ? opts.td : null }, [
+    const LBL = { category:'קטגוריה', desc:'תיאור', unit:'יחידה', qty:'כמות', price:"מחיר יח'", discPct:'הנחה %', cost:'עלות יח\'' };
+    const cell = (field, opts) => el('td', { class: opts && opts.td ? opts.td : null, 'data-label': LBL[field] || '' }, [
       mkInp(field, opts || {}),
       el('span', { class:'doc-only', 'data-print':field + ':' + i, text:String(it[field] ?? '') })
     ]);
     const tr = el('tr', { 'data-row': i }, [
-      el('td', { style:'text-align:center; color:var(--muted); font-weight:800', text:String(i+1) }),
+      el('td', { 'data-label':'סעיף', style:'text-align:center; color:var(--muted); font-weight:800', text:'#' + (i+1) }),
       cell('category', { label:'קטגוריה', style:'font-weight:700; font-size:12px' }),
       cell('desc', { label:'תיאור', style:'font-weight:600' }),
       cell('unit', { label:'יחידה', style:'text-align:center' }),
       cell('qty', { type:'number', label:'כמות', style:'text-align:center; font-weight:800' }),
       cell('price', { type:'number', label:'מחיר יחידה', style:'text-align:center; font-weight:800; color:var(--brand-2)' }),
-      el('td', { class:'no-print' }, mkInp('discPct', { type:'number', max:'100', label:'הנחת שורה', style:'text-align:center' })),
-      el('td', { class:'no-print col-cost' }, mkInp('cost', { type:'number', label:'עלות יחידה', style:'text-align:center; color:var(--crit-ink); font-weight:700' })),
-      el('td', { class:'no-print col-cost', style:'text-align:center' }, el('span', { class:'tnum', 'data-margin':i, style:'font-weight:800; font-size:12px' })),
-      el('td', { class:'cell-total tnum', 'data-total':i }),
-      el('td', { class:'no-print', style:'text-align:center' }, [
+      el('td', { class:'no-print', 'data-label':'הנחה %' }, mkInp('discPct', { type:'number', max:'100', label:'הנחת שורה', style:'text-align:center' })),
+      el('td', { class:'no-print col-cost', 'data-label':"עלות יח'" }, mkInp('cost', { type:'number', label:'עלות יחידה', style:'text-align:center; color:var(--crit-ink); font-weight:700' })),
+      el('td', { class:'no-print col-cost', 'data-label':'רווח %', style:'text-align:center' }, el('span', { class:'tnum', 'data-margin':i, style:'font-weight:800; font-size:12px' })),
+      el('td', { class:'cell-total tnum', 'data-label':'סה"כ', 'data-total':i }),
+      el('td', { class:'no-print', 'data-label':'', style:'text-align:center' }, [
         el('div', { style:'display:flex; gap:2px; justify-content:center' }, [
           el('button', { class:'btn-icon', 'data-act':'up', 'data-i':i, title:'הזז למעלה', text:'↑' }),
           el('button', { class:'btn-icon', 'data-act':'down', 'data-i':i, title:'הזז למטה', text:'↓' }),
@@ -1772,6 +2057,7 @@ function duplicateQuote(id) {
   const c = structuredClone(src);
   c.id = uid('q'); c.quoteNum = nextQuoteNum(); c.status = 'draft';
   c.quoteDate = todayISO(); c.savedAt = null; c.sentAt = null; c.decidedAt = null;
+  c.meeting = { at:'', durationMin:60, kind:'measure' };
   c.createdAt = new Date().toISOString();
   c.vatRate = clamp(num(S.business.vatRate), 0, 100);
   S.current = c;
@@ -1967,6 +2253,7 @@ function renderCRM() {
   $('kWinSub').textContent = decided ? `${approvedCount} מתוך ${decided} הצעות שהוכרעו` : 'אין נתון מספיק';
 
   renderFollowUps();
+  renderMeetings();
 
   renderCityFilter(clients);
   const term = ($('crmSearch').value || '').trim().toLowerCase();
@@ -2140,6 +2427,55 @@ function renderFollowUps() {
     ]));
   });
 }
+
+function renderMeetings() {
+  const box = $('meetList');
+  const today = todayISO();
+  const list = S.quotes
+    .map(q => ({ q, r: meetingRange(q) }))
+    .filter(x => x.r && x.r.start.toLocaleDateString('sv-SE') >= today)
+    .sort((a, b) => a.r.start - b.r.start)
+    .slice(0, 10);
+  $('meetBox').hidden = list.length === 0;
+  box.textContent = '';
+  list.forEach(({ q, r }) => {
+    const k = MEETING_KINDS[q.meeting.kind] || MEETING_KINDS.measure;
+    const d = daysBetween(today, r.start.toLocaleDateString('sv-SE'));
+    const when = r.start.toLocaleString('he-IL', { weekday:'short', day:'numeric', month:'numeric', hour:'2-digit', minute:'2-digit' });
+    const nav = buildNavLinks(q.clientAddress, q.clientCoords);
+    const g = gcalLink(q);
+    box.appendChild(el('div', { class:'qrow' }, [
+      el('div', { style:'flex:1 1 230px' }, [
+        el('div', { style:'display:flex; gap:8px; align-items:center; flex-wrap:wrap' }, [
+          el('span', { class:'badge ' + (d === 0 ? 'b-crit' : d <= 2 ? 'b-warn' : 'b-brand'),
+            text: d === 0 ? '🔔 היום' : d === 1 ? 'מחר' : `בעוד ${d} ימים` }),
+          el('strong', { style:'font-size:13.5px', text:`${k.icon} ${k.label} — ${q.clientName}` })
+        ]),
+        el('div', { class:'mini', style:'margin-top:3px',
+          text:`${when} · ${q.meeting.durationMin} דק' · ${q.clientAddress || 'נקודת GPS'} · הצעה #${q.quoteNum}` })
+      ]),
+      el('div', { style:'display:flex; gap:6px; flex-wrap:wrap' }, [
+        el('button', { class:'navchip', 'data-ics':q.id, title:'הורדת אירוע ליומן המכשיר', text:'📥 ליומן' }),
+        g ? el('a', { class:'navchip', href:g, target:'_blank', rel:'noopener', text:'🗓️' }) : null,
+        nav ? el('a', { class:'navchip waze', href:nav.waze, target:'_blank', rel:'noopener', text:'🚗' }) : null,
+        el('button', { class:'btn btn-ghost btn-sm', 'data-open':q.id, text:'פתח' })
+      ])
+    ]));
+  });
+}
+
+$('meetList').addEventListener('click', (e) => {
+  const o = e.target.closest('[data-open]'), i = e.target.closest('[data-ics]');
+  if (o) loadQuote(o.dataset.open);
+  else if (i) {
+    const q = S.quotes.find(x => x.id === i.dataset.ics);
+    const ev = q && meetingEvent(q);
+    if (ev) downloadICS([ev], `ProQuote_פגישה_${q.quoteNum}.ics`, 'ProQuote — פגישה');
+  }
+});
+$('icsExportAll').addEventListener('click', () => {
+  downloadICS(allCalendarEvents(), `ProQuote_יומן_${todayISO()}.ics`, 'ProQuote — פגישות ומעקב');
+});
 
 function followUpMsg(q, f) {
   return `שלום ${q.clientName},\nמתזכר לגבי הצעת המחיר #${q.quoteNum} עבור ${q.projectTitle || 'העבודה'} בסך ${money(f.grand)} כולל מע"מ.\nאשמח לדעת אם יש שאלות או שנתקדם לתיאום מועד.\n\nבברכה,\n${S.business.name || ''}`;
@@ -2438,14 +2774,14 @@ function renderCatalog() {
       value:c[field], 'data-cid':c.id, 'data-cf':field, 'aria-label':field, style:opts.style || ''
     });
     tb.appendChild(el('tr', {}, [
-      el('td', {}, f('category', { style:'font-weight:700; font-size:12px' })),
-      el('td', {}, f('desc')),
-      el('td', {}, f('unit', { style:'text-align:center' })),
-      el('td', {}, f('price', { type:'number', style:'text-align:center; font-weight:800; color:var(--brand-2)' })),
-      el('td', { class:'col-cost' }, f('cost', { type:'number', style:'text-align:center; font-weight:700; color:var(--crit-ink)' })),
-      el('td', { class:'tnum', style:'text-align:center; font-weight:800; color:var(--good-ink)', text:money2(prof) }),
-      el('td', { class:'tnum', style:`text-align:center; font-weight:800; color:${marginCssColor(marg)}`, text:pct(marg) }),
-      el('td', { class:'tnum mini', style:'text-align:center', text:String(c.usage || 0) }),
+      el('td', { 'data-label':'קטגוריה' }, f('category', { style:'font-weight:700; font-size:12px' })),
+      el('td', { 'data-label':'תיאור' }, f('desc')),
+      el('td', { 'data-label':'יחידה' }, f('unit', { style:'text-align:center' })),
+      el('td', { 'data-label':'מחיר ללקוח' }, f('price', { type:'number', style:'text-align:center; font-weight:800; color:var(--brand-2)' })),
+      el('td', { class:'col-cost', 'data-label':'עלות שלך' }, f('cost', { type:'number', style:'text-align:center; font-weight:700; color:var(--crit-ink)' })),
+      el('td', { class:'tnum', 'data-label':"רווח ליח'", style:'text-align:center; font-weight:800; color:var(--good-ink)', text:money2(prof) }),
+      el('td', { class:'tnum', 'data-label':'רווח %', style:`text-align:center; font-weight:800; color:${marginCssColor(marg)}`, text:pct(marg) }),
+      el('td', { class:'tnum mini', 'data-label':'בשימוש', style:'text-align:center', text:String(c.usage || 0) }),
       el('td', { style:'text-align:center' }, [
         el('button', { class:'btn-icon', 'data-cdup':c.id, title:'שכפל סעיף', text:'⧉' }),
         el('button', { class:'btn-icon danger', 'data-cdel':c.id, title:'מחק סעיף', text:'✕' })
@@ -2671,12 +3007,12 @@ $('backupBtn2').addEventListener('click', doBackup);
 $('restoreFile').addEventListener('change', doRestore);
 $('restoreFile2').addEventListener('change', doRestore);
 $('exportQuotesCsv').addEventListener('click', () => {
-  const head = ['מספר הצעה','תאריך','סטטוס','לקוח','טלפון','כתובת','עיר','GPS','פרויקט','סעיפים','לפני מע"מ','מע"מ %','סה"כ כולל מע"מ','עלות','רווח','רווחיות %','תוקף עד','נשמר'];
+  const head = ['מספר הצעה','תאריך','סטטוס','לקוח','טלפון','כתובת','עיר','GPS','פגישה','פרויקט','סעיפים','לפני מע"מ','מע"מ %','סה"כ כולל מע"מ','עלות','רווח','רווחיות %','תוקף עד','נשמר'];
   const rows = [head].concat(S.quotes.map(q => {
     const f = calc(q);
     return [q.quoteNum, q.quoteDate, STATUS_META[statusKey(q)].label, q.clientName, phoneLocal(q.clientPhone),
       q.clientAddress, q.clientCity || '', q.clientCoords ? `${q.clientCoords.lat},${q.clientCoords.lng}` : '',
-      q.projectTitle, q.items.length, f.beforeVat, f.vatRate, f.grand, f.cost, f.profit,
+      q.meeting?.at ? q.meeting.at.replace('T', ' ') : '', q.projectTitle, q.items.length, f.beforeVat, f.vatRate, f.grand, f.cost, f.profit,
       Math.round(f.margin), expiryISO(q), q.savedAt || ''];
   }));
   download(`ProQuote_הצעות_${todayISO()}.csv`, '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n'), 'text/csv;charset=utf-8');
@@ -2887,7 +3223,8 @@ const DEMO_CLIENTS = [
     gps:{ lat:32.0892, lng:34.8878 }, note:'עבודה חוזרת — לקוח מחזיר.' },
   { n:'דני כהן', p:'054-1112233', a:'הרצל 10, פתח תקווה', t:'הנמכת גבס בסלון והכנה לתאורה',
     st:'sent', m:0, d:9, it:[[6,14],[19,8],[1,38]], ms:true,
-    acc:{ floor:'1', elevator:false, code:'', parking:'פריקה מאחור, אין חניה ברחוב' }, note:'ביקש לחזור אליו ביום ראשון.' },
+    acc:{ floor:'1', elevator:false, code:'', parking:'פריקה מאחור, אין חניה ברחוב' }, note:'ביקש לחזור אליו ביום ראשון.',
+    mt:[1, '09:30', 60, 'measure'] },
   { n:'שרה אבני', p:'053-4445566', a:'ויצמן 8, נתניה', t:'שיפוץ מטבח — פירוק, ריצוף וחשמל',
     st:'approved', m:2, it:[[8,16],[11,16],[17,2],[18,4],[20,1]], ms:true,
     acc:{ floor:'5', elevator:true, code:'2580', parking:'' } },
@@ -2898,7 +3235,7 @@ const DEMO_CLIENTS = [
     acc:{ floor:'0', elevator:false, code:'5577', parking:'כניסת ספקים מרחוב אחורי' }, note:'לא ענו כבר שבועיים — לתזכר.' },
   { n:'עדי שחר', p:'058-2223344', a:'שדרות ירושלים 3, פתח תקווה', t:'בניית קיר גבס וחלוקת חדר ילדים',
     st:'draft', m:0, d:2, it:[[5,11],[1,26]], ms:false,
-    acc:{ floor:'2', elevator:false, code:'', parking:'' } }
+    acc:{ floor:'2', elevator:false, code:'', parking:'' }, mt:[3, '16:00', 90, 'meeting'] }
 ];
 
 function seedDemo() {
@@ -2924,7 +3261,8 @@ function seedDemo() {
         { label:'באמצע העבודה', mode:'pct', val:40 },
         { label:'בסיום ומסירה', mode:'pct', val:30 }
       ] : [],
-      items, savedAt:new Date(date + 'T10:00:00').toLocaleString('he-IL')
+      items, savedAt:new Date(date + 'T10:00:00').toLocaleString('he-IL'),
+      meeting: c.mt ? { at: addDays(todayISO(), c.mt[0]) + 'T' + c.mt[1], durationMin:c.mt[2], kind:c.mt[3] } : { at:'', durationMin:60, kind:'measure' }
     }, 18);
   }).sort((a, b) => (b.quoteDate || '').localeCompare(a.quoteDate || ''));
   // שימושים במחירון כדי שהסעיפים הנפוצים יצופו למעלה
